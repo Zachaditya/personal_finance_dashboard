@@ -1,0 +1,101 @@
+{
+    "userId": "user_001",
+    "asOf": "2026-02-18",
+    "baseCurrency": "USD",
+    "portfolio": {
+      "name": "Balanced 10-Asset Portfolio (No Real Estate)",
+      "notes": "Simple, diversified mix across cash, stocks, bonds, and crypto.",
+      "holdings": [
+        {
+          "assetId": "CASH_USD",
+          "name": "Cash (USD)",
+          "assetClass": "cash",
+          "ticker": null,
+          "category": "cash",
+          "valueUSD": 50000
+        },
+        {
+          "assetId": "VTI",
+          "name": "Vanguard Total Stock Market ETF",
+          "assetClass": "stocks",
+          "ticker": "VTI",
+          "category": "us_equity",
+          "valueUSD": 95000
+        },
+        {
+          "assetId": "VXUS",
+          "name": "Vanguard Total International Stock ETF",
+          "assetClass": "stocks",
+          "ticker": "VXUS",
+          "category": "intl_equity",
+          "valueUSD": 55000
+        },
+        {
+          "assetId": "QQQ",
+          "name": "Invesco QQQ Trust",
+          "assetClass": "stocks",
+          "ticker": "QQQ",
+          "category": "us_equity_tech_tilt",
+          "valueUSD": 25000
+        },
+        {
+          "assetId": "BRK.B",
+          "name": "Berkshire Hathaway Class B",
+          "assetClass": "stocks",
+          "ticker": "BRK.B",
+          "category": "us_equity_quality",
+          "valueUSD": 25000
+        },
+        {
+          "assetId": "BND",
+          "name": "Vanguard Total Bond Market ETF",
+          "assetClass": "bonds",
+          "ticker": "BND",
+          "category": "us_bonds_total",
+          "valueUSD": 150000
+        },
+        {
+          "assetId": "VTIP",
+          "name": "Vanguard Short-Term Inflation-Protected Securities ETF",
+          "assetClass": "bonds",
+          "ticker": "VTIP",
+          "category": "tips_short_term",
+          "valueUSD": 50000
+        },
+        {
+          "assetId": "TLT",
+          "name": "iShares 20+ Year Treasury Bond ETF",
+          "assetClass": "bonds",
+          "ticker": "TLT",
+          "category": "us_treasury_long",
+          "valueUSD": 25000
+        },
+        {
+          "assetId": "BTC",
+          "name": "Bitcoin",
+          "assetClass": "crypto",
+          "ticker": "BTC",
+          "category": "crypto_major",
+          "valueUSD": 20000
+        },
+        {
+          "assetId": "ETH",
+          "name": "Ethereum",
+          "assetClass": "crypto",
+          "ticker": "ETH",
+          "category": "crypto_major",
+          "valueUSD": 5000
+        }
+      ],
+      "totals": {
+        "totalValueUSD": 500000
+      },
+      "allocationApprox": {
+        "cash": 0.1,
+        "stocks": 0.4,
+        "bonds": 0.45,
+        "crypto": 0.05
+      }
+    }
+  }
+  
