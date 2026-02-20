@@ -1,5 +1,12 @@
 export type AssetClass = "cash" | "stocks" | "bonds" | "crypto";
 
+export type Asset = {
+  assetId: string;
+  name: string;
+  assetClass: AssetClass;
+  ticker?: string | null;
+};
+
 export type Holding = {
   assetId: string;
   name: string;
@@ -32,4 +39,5 @@ export type PricePoint = {
 
 export type PortfolioPriceHistory = {
   data: PricePoint[];
+  sp500?: PricePoint[]; // Simulated S&P 500 investment (same initial value)
 };

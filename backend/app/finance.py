@@ -36,6 +36,16 @@ def get_returns(df: pd.DataFrame | None = None) -> pd.DataFrame:
     return df[return_cols].copy()
 
 
+def get_sp500_returns(df: pd.DataFrame | None = None) -> pd.Series | None:
+    """Return S&P 500 daily returns series, or None if not in CSV."""
+    if df is None:
+        df = load_assets_csv()
+    for col in ("GSPC_return", "SP500_return"):
+        if col in df.columns:
+            return df[col].copy()
+    return None
+
+
 def get_asset_data(asset_id: str, df: pd.DataFrame | None = None) -> pd.DataFrame:
     """Return Close and return columns for a single asset."""
     if df is None:

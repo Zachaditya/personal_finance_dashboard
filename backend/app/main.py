@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .portfolio import get_portfolio_price_history, load_user_profile
-from .schemas import PortfolioPriceHistory, UserProfile
+from .portfolio import (
+    build_custom_profile,
+    get_custom_price_history,
+    load_assets,
+)
+from .schemas import Asset, CustomPortfolioRequest, PortfolioPriceHistory, UserProfile
 
 app = FastAPI()
 
@@ -20,11 +24,16 @@ def health():
     return {"ok": True}
 
 
-@app.get("/portfolio/{user_id}", response_model=UserProfile)
-def get_portfolio(user_id: str):
-    return load_user_profile(user_id)
+@app.get("/assets", response_model=list[Asset])
+def get_assets():
+    return load_assets()
 
 
-@app.get("/portfolio/{user_id}/price-history", response_model=PortfolioPriceHistory)
-def get_price_history(user_id: str):
-    return get_portfolio_price_history(user_id)
+@app.post("/portfolio/custom", response_model=UserProfile)
+def post_custom_portfolio(request: CustomPortfolioRequest):
+    return build_custom_profile(request)
+
+
+@app.post("/portfolio/custom/price-history", response_model=PortfolioPriceHistory)
+def post_custom_price_history(request: CustomPortfolioRequest):
+    return get_custom_price_history(request)

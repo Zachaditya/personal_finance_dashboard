@@ -8,6 +8,13 @@ from pydantic import BaseModel, Field
 AssetClass = Literal["cash", "stocks", "bonds", "crypto"]
 
 
+class Asset(BaseModel):
+    assetId: str
+    name: str
+    assetClass: AssetClass
+    ticker: Optional[str] = None
+
+
 class Holding(BaseModel):
     assetId: str
     name: str
@@ -52,3 +59,13 @@ class PricePoint(BaseModel):
 
 class PortfolioPriceHistory(BaseModel):
     data: List[PricePoint]
+    sp500: Optional[List[PricePoint]] = None  # Simulated S&P 500 investment (same initial value)
+
+
+class CustomHolding(BaseModel):
+    assetId: str
+    valueUSD: float = Field(ge=0)
+
+
+class CustomPortfolioRequest(BaseModel):
+    holdings: List[CustomHolding]

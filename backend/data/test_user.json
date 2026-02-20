@@ -79,6 +79,14 @@
           "valueUSD": 20000
         },
         {
+          "assetId": "SPY",
+          "name": "S&P 500",
+          "assetClass": "stocks",
+          "ticker": "^GSPC",
+          "category": "STOCKS_SP500",
+          "valueUSD": 5000
+        },
+        {
           "assetId": "ETH",
           "name": "Ethereum",
           "assetClass": "crypto",

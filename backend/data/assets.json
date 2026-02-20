@@ -1,0 +1,122 @@
+[
+  {
+    "assetId": "CASH_USD",
+    "name": "Cash (USD)",
+    "assetClass": "cash",
+    "ticker": null
+  },
+  {
+    "assetId": "VTI",
+    "name": "Vanguard Total Stock Market ETF",
+    "assetClass": "stocks",
+    "ticker": "VTI"
+  },
+  {
+    "assetId": "VXUS",
+    "name": "Vanguard Total International Stock ETF",
+    "assetClass": "stocks",
+    "ticker": "VXUS"
+  },
+  {
+    "assetId": "QQQ",
+    "name": "Invesco QQQ Trust",
+    "assetClass": "stocks",
+    "ticker": "QQQ"
+  },
+  {
+    "assetId": "BRK.B",
+    "name": "Berkshire Hathaway Class B",
+    "assetClass": "stocks",
+    "ticker": "BRK.B"
+  },
+  {
+    "assetId": "SPY",
+    "name": "SPDR S&P 500 ETF",
+    "assetClass": "stocks",
+    "ticker": "SPY"
+  },
+  {
+    "assetId": "AAPL",
+    "name": "Apple Inc.",
+    "assetClass": "stocks",
+    "ticker": "AAPL"
+  },
+  {
+    "assetId": "TSLA",
+    "name": "Tesla Inc.",
+    "assetClass": "stocks",
+    "ticker": "TSLA"
+  },
+  {
+    "assetId": "JNJ",
+    "name": "Johnson & Johnson",
+    "assetClass": "stocks",
+    "ticker": "JNJ"
+  },
+  {
+    "assetId": "JPM",
+    "name": "JPMorgan Chase & Co.",
+    "assetClass": "stocks",
+    "ticker": "JPM"
+  },
+  {
+    "assetId": "PG",
+    "name": "Procter & Gamble Co.",
+    "assetClass": "stocks",
+    "ticker": "PG"
+  },
+  {
+    "assetId": "XOM",
+    "name": "Exxon Mobil Corp.",
+    "assetClass": "stocks",
+    "ticker": "XOM"
+  },
+  {
+    "assetId": "BND",
+    "name": "Vanguard Total Bond Market ETF",
+    "assetClass": "bonds",
+    "ticker": "BND"
+  },
+  {
+    "assetId": "VTIP",
+    "name": "Vanguard Short-Term Inflation-Protected Securities ETF",
+    "assetClass": "bonds",
+    "ticker": "VTIP"
+  },
+  {
+    "assetId": "TLT",
+    "name": "iShares 20+ Year Treasury Bond ETF",
+    "assetClass": "bonds",
+    "ticker": "TLT"
+  },
+  {
+    "assetId": "SLV",
+    "name": "iShares Silver Trust",
+    "assetClass": "bonds",
+    "ticker": "SLV"
+  },
+  {
+    "assetId": "BTC",
+    "name": "Bitcoin",
+    "assetClass": "crypto",
+    "ticker": "BTC"
+  },
+  {
+    "assetId": "ETH",
+    "name": "Ethereum",
+    "assetClass": "crypto",
+    "ticker": "ETH"
+  },
+  {
+    "assetId": "SOL",
+    "name": "Solana",
+    "assetClass": "crypto",
+    "ticker": "SOL"
+  },
+  {
+    "assetId": "LINK",
+    "name": "Chainlink",
+    "assetClass": "crypto",
+    "ticker": "LINK"
+  }
+]
