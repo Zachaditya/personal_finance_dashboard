@@ -12,6 +12,13 @@ const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
   crypto: "Crypto",
 };
 
+const ASSET_CLASS_ACCENT: Record<AssetClass, string> = {
+  cash: "text-emerald-400",
+  stocks: "text-blue-400",
+  bonds: "text-violet-400",
+  crypto: "text-orange-400",
+};
+
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -63,16 +70,21 @@ export default function SelectPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
-        <p className="text-zinc-500">Loading assets…</p>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-slate-400">
+          <div className="h-4 w-4 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
+          <span className="text-sm">Loading assets…</span>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
-        <p className="text-red-600">Failed to load assets: {error}</p>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="rounded-xl bg-slate-900 border border-red-900/50 p-6 max-w-sm">
+          <p className="text-sm text-red-400">Failed to load assets: {error}</p>
+        </div>
       </div>
     );
   }
@@ -85,73 +97,94 @@ export default function SelectPage() {
     { cash: [], stocks: [], bonds: [], crypto: [] },
   );
 
-  return (
-    <div className="min-h-screen bg-zinc-50 font-sans">
-      <main className="mx-auto max-w-2xl px-6 py-12">
-        <h1 className="text-2xl font-semibold text-zinc-900 mb-2">
-          Select your assets
-        </h1>
-        <p className="text-zinc-500 mb-8">
-          Choose which assets to include in your portfolio view.
-        </p>
+  const totalSelected = [...selected].reduce(
+    (sum, id) => sum + (values[id] ?? 0),
+    0,
+  );
 
+  return (
+    <div className="min-h-screen bg-slate-950 font-sans">
+      {/* Header */}
+      <nav className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
+        <div className="mx-auto max-w-2xl px-6 py-3.5 flex items-center gap-2.5">
+          <span className="text-emerald-400 text-lg leading-none">◈</span>
+          <span className="text-sm font-semibold text-slate-100 tracking-tight">
+            Portfolio Dashboard
+          </span>
+        </div>
+      </nav>
+
+      <main className="mx-auto max-w-2xl px-6 py-10">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight mb-2">
+            Build your portfolio
+          </h1>
+          <p className="text-sm text-slate-400">
+            Select assets and enter their current values to analyze your portfolio.
+          </p>
+        </div>
+
+        {/* Quick select buttons */}
         <div className="flex gap-2 mb-6">
           <button
             type="button"
             onClick={selectAll}
-            className="rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-300 transition-colors"
+            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-medium text-slate-300 transition-colors"
           >
             Select all
           </button>
           <button
             type="button"
             onClick={selectNone}
-            className="rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-300 transition-colors"
+            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-medium text-slate-300 transition-colors"
           >
             Select none
           </button>
         </div>
 
-        <section className="rounded-xl bg-white shadow-sm border border-zinc-200 overflow-hidden">
-          <div className="divide-y divide-zinc-200">
+        {/* Asset card */}
+        <section className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
+          <div className="divide-y divide-slate-800">
             {(Object.entries(ASSET_CLASS_LABELS) as [AssetClass, string][]).map(
               ([assetClass, label]) => {
                 const items = groupedByClass[assetClass];
                 if (!items.length) return null;
 
                 return (
-                  <div key={assetClass} className="p-4">
-                    <h2 className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-3">
+                  <div key={assetClass} className="p-5">
+                    <h2 className={`text-xs font-semibold uppercase tracking-widest mb-3 ${ASSET_CLASS_ACCENT[assetClass]}`}>
                       {label}
                     </h2>
-                    <ul className="space-y-2">
+                    <ul className="space-y-1">
                       {items.map((asset) => (
                         <li key={asset.assetId}>
                           <div
-                            className={`flex items-center gap-4 hover:bg-zinc-50 -mx-2 px-2 py-2 rounded-lg transition-colors ${
-                              selected.has(asset.assetId) ? "" : "opacity-60"
+                            className={`flex items-center gap-4 -mx-2 px-3 py-2.5 rounded-lg transition-colors ${
+                              selected.has(asset.assetId)
+                                ? "hover:bg-slate-800/50"
+                                : "opacity-40 hover:bg-slate-800/30"
                             }`}
                           >
-                            <label className="flex items-center gap-4 cursor-pointer flex-1 min-w-0">
+                            <label className="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
                               <input
                                 type="checkbox"
                                 checked={selected.has(asset.assetId)}
                                 onChange={() => toggleAsset(asset.assetId)}
-                                className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500 shrink-0"
+                                className="h-4 w-4 rounded border-slate-600 bg-slate-800 accent-emerald-400 cursor-pointer shrink-0"
                               />
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-zinc-900">
+                                <p className="font-medium text-slate-200 text-sm">
                                   {asset.name}
                                 </p>
                                 {asset.ticker && (
-                                  <p className="text-sm text-zinc-500">
+                                  <p className="text-xs text-slate-500 mt-0.5">
                                     {asset.ticker}
                                   </p>
                                 )}
                               </div>
                             </label>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <span className="text-sm text-zinc-500">$</span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-xs text-slate-500 font-medium">$</span>
                               <input
                                 type="text"
                                 inputMode="decimal"
@@ -161,7 +194,7 @@ export default function SelectPage() {
                                 }
                                 placeholder="0"
                                 aria-label={`${asset.name} value in USD`}
-                                className="w-24 rounded-md border border-zinc-300 px-2 py-1.5 text-sm text-right font-medium text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+                                className="w-28 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-sm text-right font-medium text-slate-100 placeholder-slate-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
                               />
                             </div>
                           </div>
@@ -175,20 +208,23 @@ export default function SelectPage() {
           </div>
         </section>
 
-        <h2 className="mt-6 text-sm text-zinc-500">
-          {selected.size} of {assets.length} assets selected
-          {selected.size > 0 && (
-            <>
-              {" • "}
-              Total:{" "}
-              {formatCurrency(
-                [...selected].reduce((sum, id) => sum + (values[id] ?? 0), 0),
-              )}
-            </>
-          )}
-        </h2>
+        {/* Summary + CTA */}
+        <div className="mt-6 flex items-center justify-between">
+          <p className="text-sm text-slate-500">
+            <span className="text-slate-300 font-medium">{selected.size}</span>
+            {" of "}
+            <span className="text-slate-300 font-medium">{assets.length}</span>
+            {" assets selected"}
+            {selected.size > 0 && totalSelected > 0 && (
+              <>
+                <span className="mx-2 text-slate-700">•</span>
+                <span className="text-emerald-400 font-medium">
+                  {formatCurrency(totalSelected)}
+                </span>
+              </>
+            )}
+          </p>
 
-        <div className="mt-8">
           <button
             type="button"
             disabled={selected.size === 0}
@@ -198,9 +234,10 @@ export default function SelectPage() {
               );
               router.push(`/dashboard?h=${pairs.join(",")}`);
             }}
-            className="inline-flex items-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed transition-colors shadow-lg shadow-emerald-500/20 disabled:shadow-none"
           >
             View Dashboard
+            <span className="text-sm">→</span>
           </button>
         </div>
       </main>

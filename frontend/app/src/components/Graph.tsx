@@ -41,7 +41,6 @@ type GraphProps = {
 export function Graph({ priceHistory }: GraphProps) {
   const { data, sp500 } = priceHistory;
 
-  // Merge portfolio and S&P 500 by date for chart
   const chartData =
     sp500 && sp500.length > 0
       ? data.map((p) => {
@@ -56,11 +55,11 @@ export function Graph({ priceHistory }: GraphProps) {
 
   if (data.length === 0) {
     return (
-      <section className="rounded-xl bg-white p-5 shadow-sm border border-zinc-200">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-3">
+      <section className="rounded-xl bg-slate-900 p-5 border border-slate-800 h-full flex flex-col">
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
           Portfolio Value Over Time
         </h2>
-        <p className="text-sm text-zinc-500">No price history available.</p>
+        <p className="text-sm text-slate-500">No price history available.</p>
       </section>
     );
   }
@@ -76,15 +75,14 @@ export function Graph({ priceHistory }: GraphProps) {
   const yMin = Math.floor((min - padding) / 1000) * 1000;
   const yMax = Math.ceil((max + padding) / 1000) * 1000;
 
-  // Show ~6 evenly spaced x-axis labels
   const tickInterval = Math.max(1, Math.floor(chartData.length / 6));
   const xTicks = chartData
     .filter((_, i) => i % tickInterval === 0)
     .map((p) => p.date);
 
   return (
-    <section className="rounded-xl bg-white p-5 shadow-sm border border-zinc-200">
-      <h2 className="text-lg font-semibold text-zinc-900 mb-4">
+    <section className="rounded-xl bg-slate-900 p-5 border border-slate-800">
+      <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
         Portfolio Value Over Time
       </h2>
       <div className="h-64">
@@ -94,14 +92,14 @@ export function Graph({ priceHistory }: GraphProps) {
               dataKey="date"
               ticks={xTicks}
               tickFormatter={formatDateShort}
-              tick={{ fontSize: 12, fill: "#71717a" }}
-              axisLine={{ stroke: "#e4e4e7" }}
+              tick={{ fontSize: 11, fill: "#64748b" }}
+              axisLine={{ stroke: "#1e293b" }}
               tickLine={false}
             />
             <YAxis
               domain={[yMin, yMax]}
               tickFormatter={(v: number) => formatCurrency(v)}
-              tick={{ fontSize: 12, fill: "#71717a" }}
+              tick={{ fontSize: 11, fill: "#64748b" }}
               axisLine={false}
               tickLine={false}
               width={90}
@@ -112,14 +110,18 @@ export function Graph({ priceHistory }: GraphProps) {
               }
               labelFormatter={(label) => formatDateFull(String(label))}
               contentStyle={{
+                backgroundColor: "#1e293b",
+                border: "1px solid #334155",
                 borderRadius: "8px",
-                border: "1px solid #e4e4e7",
-                fontSize: "14px",
+                fontSize: "13px",
+                color: "#f1f5f9",
               }}
+              labelStyle={{ color: "#94a3b8", marginBottom: "4px" }}
+              itemStyle={{ color: "#f1f5f9" }}
             />
             {(sp500?.length ?? 0) > 0 && (
               <Legend
-                wrapperStyle={{ fontSize: "12px" }}
+                wrapperStyle={{ fontSize: "12px", color: "#94a3b8" }}
                 iconType="line"
                 iconSize={10}
               />
@@ -128,21 +130,21 @@ export function Graph({ priceHistory }: GraphProps) {
               type="monotone"
               dataKey="valueUSD"
               name="Portfolio"
-              stroke="#2563eb"
+              stroke="#34d399"
               strokeWidth={2}
               dot={false}
-              activeDot={{ r: 4, fill: "#2563eb" }}
+              activeDot={{ r: 4, fill: "#34d399", strokeWidth: 0 }}
             />
             {sp500 && sp500.length > 0 && (
               <Line
                 type="monotone"
                 dataKey="sp500Value"
                 name="S&P 500"
-                stroke="#eab308"
+                stroke="#60a5fa"
                 strokeWidth={2}
                 dot={false}
                 connectNulls
-                activeDot={{ r: 4, fill: "#eab308" }}
+                activeDot={{ r: 4, fill: "#60a5fa", strokeWidth: 0 }}
               />
             )}
           </LineChart>
