@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type {
   Holding,
   AssetClass,
@@ -6,6 +5,7 @@ import type {
   PortfolioPriceHistory,
 } from "../lib/types";
 import { Graph } from "./Graph";
+import { IndividualAssets } from "./IndividualAssets";
 
 const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
   cash: "Cash",
@@ -64,11 +64,23 @@ function computeRatios(
     byClass[h.assetClass] += h.valueUSD;
   }
   if (total > 0) {
-    ratios.push({ label: "Equity %", value: formatPercent(byClass.stocks / total) });
-    ratios.push({ label: "Bond %", value: formatPercent(byClass.bonds / total) });
-    ratios.push({ label: "Cash %", value: formatPercent(byClass.cash / total) });
+    ratios.push({
+      label: "Equity %",
+      value: formatPercent(byClass.stocks / total),
+    });
+    ratios.push({
+      label: "Bond %",
+      value: formatPercent(byClass.bonds / total),
+    });
+    ratios.push({
+      label: "Cash %",
+      value: formatPercent(byClass.cash / total),
+    });
     if (byClass.crypto > 0) {
-      ratios.push({ label: "Crypto %", value: formatPercent(byClass.crypto / total) });
+      ratios.push({
+        label: "Crypto %",
+        value: formatPercent(byClass.crypto / total),
+      });
     }
   }
 
@@ -89,7 +101,10 @@ function computeRatios(
       dailyReturns.reduce((s, r) => s + (r - mean) ** 2, 0) /
       Math.max(1, dailyReturns.length - 1);
     const annualizedVol = Math.sqrt(variance) * Math.sqrt(252);
-    ratios.push({ label: "Volatility (ann.)", value: formatPercent(annualizedVol) });
+    ratios.push({
+      label: "Volatility (ann.)",
+      value: formatPercent(annualizedVol),
+    });
 
     let peak = values[0];
     let maxDD = 0;
@@ -126,25 +141,6 @@ export function Dashboard({ profile, priceHistory }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
-      {/* Sticky nav */}
-      <nav className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="text-emerald-400 text-lg leading-none">◈</span>
-            <span className="text-sm font-semibold text-slate-100 tracking-tight">
-              Portfolio Dashboard
-            </span>
-          </div>
-          <Link
-            href="/"
-            className="text-xs font-medium text-slate-400 hover:text-slate-100 transition-colors flex items-center gap-1.5 group"
-          >
-            Change assets
-            <span className="text-slate-600 group-hover:text-slate-400 transition-colors">→</span>
-          </Link>
-        </div>
-      </nav>
-
       <main className="mx-auto max-w-6xl px-6 py-8 space-y-4">
         {/* Net Worth Hero */}
         <section className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/20 p-7 shadow-2xl shadow-slate-950/50">
@@ -157,34 +153,44 @@ export function Dashboard({ profile, priceHistory }: DashboardProps) {
           <p className="mt-3 text-sm text-slate-500">As of {profile.asOf}</p>
         </section>
 
-        {/* Chart + Ratios */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <Graph priceHistory={priceHistory} />
-          </div>
+        {/* Graph section */}
+        <section className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
+          <Graph priceHistory={priceHistory} />
+        </section>
 
-          <section className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-slate-800">
-              <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Financial Ratios
-              </h2>
-            </div>
-            <div className="px-5 py-4">
-              <table className="w-full">
-                <tbody className="divide-y divide-slate-800/60">
-                  {ratios.map(({ label, value }) => (
-                    <tr key={label}>
-                      <td className="py-2.5 text-sm text-slate-400">{label}</td>
-                      <td className={`py-2.5 text-sm font-semibold text-right tabular-nums ${getRatioValueClass(label, value)}`}>
-                        {value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
+        {/* Individual Holdings */}
+        <section className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
+          <IndividualAssets
+            priceHistory={priceHistory}
+            holdings={holdings}
+            totalValueUSD={portfolio.totals.totalValueUSD}
+          />
+        </section>
+
+        {/* Financial Ratios */}
+        <section className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-slate-800">
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              Financial Ratios
+            </h2>
+          </div>
+          <div className="px-5 py-4">
+            <table className="w-full">
+              <tbody className="divide-y divide-slate-800/60">
+                {ratios.map(({ label, value }) => (
+                  <tr key={label}>
+                    <td className="py-2.5 text-sm text-slate-400">{label}</td>
+                    <td
+                      className={`py-2.5 text-sm font-semibold text-right tabular-nums ${getRatioValueClass(label, value)}`}
+                    >
+                      {value}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         {/* Holdings Table */}
         <section className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
@@ -218,13 +224,19 @@ export function Dashboard({ profile, priceHistory }: DashboardProps) {
                     className="hover:bg-slate-800/30 transition-colors"
                   >
                     <td className="px-5 py-3.5">
-                      <p className="font-medium text-slate-100">{holding.name}</p>
+                      <p className="font-medium text-slate-100">
+                        {holding.name}
+                      </p>
                       {holding.ticker && (
-                        <p className="text-xs text-slate-500 mt-0.5">{holding.ticker}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {holding.ticker}
+                        </p>
                       )}
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${ASSET_CLASS_BADGE[holding.assetClass]}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${ASSET_CLASS_BADGE[holding.assetClass]}`}
+                      >
                         {ASSET_CLASS_LABELS[holding.assetClass]}
                       </span>
                     </td>

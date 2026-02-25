@@ -4,7 +4,7 @@ from typing import Union
 
 import numpy as np
 
-from .finance import get_returns, get_sp500_returns
+from .finance import get_returns, get_sp500_returns, get_btc_returns
 from .schemas import (
     AllocationApprox,
     Asset,
@@ -38,6 +38,18 @@ def load_assets() -> list[Asset]:
     return [Asset.model_validate(a) for a in data]
 
 
+def _compute_benchmark(
+    initial_value: float, index: "np.ndarray", returns: "np.ndarray"
+) -> list[PricePoint]:
+    """Simulate investment from same initial value using returns series."""
+    cum_growth = np.cumprod(1 + returns)
+    cum_values = initial_value * cum_growth / cum_growth[0]
+    return [
+        PricePoint(date=str(d.date()), valueUSD=round(float(v), 2))
+        for d, v in zip(index, cum_values)
+    ]
+
+
 def _compute_sp500_benchmark(
     initial_value: float, index: "np.ndarray"
 ) -> list[PricePoint] | None:
@@ -45,14 +57,19 @@ def _compute_sp500_benchmark(
     sp500_returns = get_sp500_returns()
     if sp500_returns is None:
         return None
-    # Align to portfolio dates
     aligned = sp500_returns.reindex(index).fillna(0.0)
-    cum_growth = np.cumprod(1 + aligned.values)
-    cum_values = initial_value * cum_growth / cum_growth[0]
-    return [
-        PricePoint(date=str(d.date()), valueUSD=round(float(v), 2))
-        for d, v in zip(aligned.index, cum_values)
-    ]
+    return _compute_benchmark(initial_value, aligned.index, aligned.values)
+
+
+def _compute_bitcoin_benchmark(
+    initial_value: float, index: "np.ndarray"
+) -> list[PricePoint] | None:
+    """Simulate Bitcoin investment from same initial value. Returns None if no BTC data."""
+    btc_returns = get_btc_returns()
+    if btc_returns is None:
+        return None
+    aligned = btc_returns.reindex(index).fillna(0.0)
+    return _compute_benchmark(initial_value, aligned.index, aligned.values)
 
 
 
@@ -143,4 +160,5 @@ def get_custom_price_history(request: CustomPortfolioRequest) -> PortfolioPriceH
         for d, v in zip(aligned.index, cum_values)
     ]
     sp500 = _compute_sp500_benchmark(total_value, aligned.index)
-    return PortfolioPriceHistory(data=data, sp500=sp500)
+    bitcoin = _compute_bitcoin_benchmark(total_value, aligned.index)
+    return PortfolioPriceHistory(data=data, sp500=sp500, bitcoin=bitcoin)

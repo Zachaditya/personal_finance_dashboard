@@ -60,6 +60,7 @@ class PricePoint(BaseModel):
 class PortfolioPriceHistory(BaseModel):
     data: List[PricePoint]
     sp500: Optional[List[PricePoint]] = None  # Simulated S&P 500 investment (same initial value)
+    bitcoin: Optional[List[PricePoint]] = None  # Simulated Bitcoin investment (same initial value)
 
 
 class CustomHolding(BaseModel):

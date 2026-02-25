@@ -40,4 +40,5 @@ export type PricePoint = {
 export type PortfolioPriceHistory = {
   data: PricePoint[];
   sp500?: PricePoint[]; // Simulated S&P 500 investment (same initial value)
+  bitcoin?: PricePoint[]; // Simulated Bitcoin investment (same initial value)
 };

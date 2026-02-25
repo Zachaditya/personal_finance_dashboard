@@ -1,15 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import type { PortfolioPriceHistory } from "../lib/types";
+
+const LINES = [
+  { key: "portfolio" as const, label: "Portfolio", color: "#34d399" },
+  { key: "sp500" as const, label: "S&P 500", color: "#60a5fa" },
+  { key: "bitcoin" as const, label: "Bitcoin", color: "#f59e0b" },
+] as const;
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -39,19 +45,30 @@ type GraphProps = {
 };
 
 export function Graph({ priceHistory }: GraphProps) {
-  const { data, sp500 } = priceHistory;
+  const { data, sp500, bitcoin } = priceHistory;
+  const [visible, setVisible] = useState({
+    portfolio: true,
+    sp500: true,
+    bitcoin: true,
+  });
 
-  const chartData =
-    sp500 && sp500.length > 0
-      ? data.map((p) => {
-          const sp = sp500.find((s) => s.date === p.date);
-          return {
-            date: p.date,
-            valueUSD: p.valueUSD,
-            sp500Value: sp?.valueUSD ?? null,
-          };
-        })
-      : data.map((p) => ({ date: p.date, valueUSD: p.valueUSD, sp500Value: null }));
+  const toggleLine = (key: (typeof LINES)[number]["key"]) => {
+    setVisible((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const hasSp500 = (sp500?.length ?? 0) > 0;
+  const hasBitcoin = (bitcoin?.length ?? 0) > 0;
+
+  const chartData = data.map((p) => {
+    const sp = sp500?.find((s) => s.date === p.date);
+    const btc = bitcoin?.find((b) => b.date === p.date);
+    return {
+      date: p.date,
+      valueUSD: p.valueUSD,
+      sp500Value: sp?.valueUSD ?? null,
+      bitcoinValue: btc?.valueUSD ?? null,
+    };
+  });
 
   if (data.length === 0) {
     return (
@@ -64,13 +81,20 @@ export function Graph({ priceHistory }: GraphProps) {
     );
   }
 
-  const portfolioValues = chartData.map((p) => p.valueUSD);
-  const sp500Values = chartData
-    .map((p) => p.sp500Value)
-    .filter((v): v is number => v != null);
-  const allValues = [...portfolioValues, ...sp500Values];
-  const min = Math.min(...allValues);
-  const max = Math.max(...allValues);
+  const portfolioValues = visible.portfolio ? chartData.map((p) => p.valueUSD) : [];
+  const sp500Values =
+    visible.sp500 && hasSp500
+      ? chartData.map((p) => p.sp500Value).filter((v): v is number => v != null)
+      : [];
+  const bitcoinValues =
+    visible.bitcoin && hasBitcoin
+      ? chartData.map((p) => p.bitcoinValue).filter((v): v is number => v != null)
+      : [];
+  const allValues = [...portfolioValues, ...sp500Values, ...bitcoinValues];
+  const min =
+    allValues.length > 0 ? Math.min(...allValues) : 0;
+  const max =
+    allValues.length > 0 ? Math.max(...allValues) : 100000;
   const padding = (max - min) * 0.1 || 1000;
   const yMin = Math.floor((min - padding) / 1000) * 1000;
   const yMax = Math.ceil((max + padding) / 1000) * 1000;
@@ -80,11 +104,43 @@ export function Graph({ priceHistory }: GraphProps) {
     .filter((_, i) => i % tickInterval === 0)
     .map((p) => p.date);
 
+  const lineConfigs = [
+    { key: "portfolio" as const, show: true, hasData: true },
+    { key: "sp500" as const, show: hasSp500, hasData: hasSp500 },
+    { key: "bitcoin" as const, show: hasBitcoin, hasData: hasBitcoin },
+  ].filter((c) => c.hasData);
+
   return (
     <section className="rounded-xl bg-slate-900 p-5 border border-slate-800">
-      <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-        Portfolio Value Over Time
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          Portfolio Value Over Time
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {lineConfigs.map(({ key }) => {
+            const config = LINES.find((l) => l.key === key)!;
+            const isOn = visible[key];
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => toggleLine(key)}
+                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  isOn
+                    ? "bg-slate-700 text-slate-100 ring-1 ring-slate-600"
+                    : "bg-slate-800/50 text-slate-500 hover:bg-slate-800"
+                }`}
+              >
+                <span
+                  className="h-2 w-4 rounded-sm shrink-0"
+                  style={{ backgroundColor: config.color }}
+                />
+                {config.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
@@ -119,23 +175,18 @@ export function Graph({ priceHistory }: GraphProps) {
               labelStyle={{ color: "#94a3b8", marginBottom: "4px" }}
               itemStyle={{ color: "#f1f5f9" }}
             />
-            {(sp500?.length ?? 0) > 0 && (
-              <Legend
-                wrapperStyle={{ fontSize: "12px", color: "#94a3b8" }}
-                iconType="line"
-                iconSize={10}
+            {visible.portfolio && (
+              <Line
+                type="monotone"
+                dataKey="valueUSD"
+                name="Portfolio"
+                stroke="#34d399"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4, fill: "#34d399", strokeWidth: 0 }}
               />
             )}
-            <Line
-              type="monotone"
-              dataKey="valueUSD"
-              name="Portfolio"
-              stroke="#34d399"
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4, fill: "#34d399", strokeWidth: 0 }}
-            />
-            {sp500 && sp500.length > 0 && (
+            {visible.sp500 && sp500 && sp500.length > 0 && (
               <Line
                 type="monotone"
                 dataKey="sp500Value"
@@ -145,6 +196,18 @@ export function Graph({ priceHistory }: GraphProps) {
                 dot={false}
                 connectNulls
                 activeDot={{ r: 4, fill: "#60a5fa", strokeWidth: 0 }}
+              />
+            )}
+            {visible.bitcoin && bitcoin && bitcoin.length > 0 && (
+              <Line
+                type="monotone"
+                dataKey="bitcoinValue"
+                name="Bitcoin"
+                stroke="#f59e0b"
+                strokeWidth={2}
+                dot={false}
+                connectNulls
+                activeDot={{ r: 4, fill: "#f59e0b", strokeWidth: 0 }}
               />
             )}
           </LineChart>
