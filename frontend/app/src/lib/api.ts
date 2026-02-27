@@ -4,11 +4,24 @@ import { Asset, UserProfile, PortfolioPriceHistory } from "./types";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const getAssets = async (): Promise<Asset[]> => {
-    const response = await fetch(`${API_URL}/assets`);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch assets: ${response.statusText}`);
+    const url = `${API_URL}/assets`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(
+                `Failed to fetch assets: ${response.status} ${response.statusText} from ${url}`
+            );
+        }
+        return response.json();
+    } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (message.includes("Failed to fetch") || message.includes("NetworkError")) {
+            throw new Error(
+                `Cannot reach API at ${url}. Check NEXT_PUBLIC_API_URL is set in Vercel and the backend is deployed.`
+            );
+        }
+        throw err;
     }
-    return response.json();
 }
 
 export const postCustomPortfolio = async (
