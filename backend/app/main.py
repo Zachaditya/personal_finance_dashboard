@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://personal-finance-dashboard-three-brown.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
