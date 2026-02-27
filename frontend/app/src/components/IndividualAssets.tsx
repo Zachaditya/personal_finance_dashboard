@@ -90,8 +90,8 @@ export function IndividualAssets({
   );
 
   // All holdings visible by default
-  const [visible, setVisible] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(holdings.map((h) => [h.assetId, true])),
+  const [visible, setVisible] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(holdings.map((h) => [h.assetId, true])),
   );
 
   const toggleHolding = (assetId: string) =>
@@ -116,19 +116,45 @@ export function IndividualAssets({
     [holdings, totalValueUSD],
   );
 
-  // Each row: { date, [assetId]: portfolioValue * weight, ... }
-  // Projects the portfolio's daily returns onto each holding's starting weight,
-  // giving an estimated USD value for each asset over time.
+  // Cash holdings (e.g. CASH_USD) have zero volatility - value stays constant
+  const cashTotal = useMemo(
+    () =>
+      holdings
+        .filter((h) => h.assetClass === "cash")
+        .reduce((s, h) => s + h.valueUSD, 0),
+    [holdings],
+  );
+  const riskyTotal = totalValueUSD - cashTotal;
+  const riskyWeights = useMemo(
+    () =>
+      Object.fromEntries(
+        holdings
+          .filter((h) => h.assetClass !== "cash")
+          .map((h) => [
+            h.assetId,
+            riskyTotal > 0 ? h.valueUSD / riskyTotal : 0,
+          ]),
+      ) as Record<string, number>,
+    [holdings, riskyTotal],
+  );
+
+  // Each row: { date, [assetId]: value, ... }
+  // Cash: constant value (no volatility). Risky assets: share of (portfolio - cash) over time.
   const chartData = useMemo(
     () =>
       data.map((p) => {
         const point: Record<string, string | number> = { date: p.date };
+        const riskyPortion = p.valueUSD - cashTotal;
         for (const h of holdings) {
-          point[h.assetId] = p.valueUSD * (weights[h.assetId] ?? 0);
+          if (h.assetClass === "cash") {
+            point[h.assetId] = h.valueUSD;
+          } else {
+            point[h.assetId] = riskyPortion * (riskyWeights[h.assetId] ?? 0);
+          }
         }
         return point;
       }),
-    [data, holdings, weights],
+    [data, holdings, cashTotal, riskyWeights],
   );
 
   if (data.length === 0 || holdings.length === 0) {
@@ -143,7 +169,9 @@ export function IndividualAssets({
   }
 
   // Y-axis domain from currently visible holdings only
-  const visibleIds = holdings.filter((h) => visible[h.assetId]).map((h) => h.assetId);
+  const visibleIds = holdings
+    .filter((h) => visible[h.assetId])
+    .map((h) => h.assetId);
   const visibleValues = chartData.flatMap((p) =>
     visibleIds.map((id) => p[id] as number),
   );
@@ -246,7 +274,11 @@ export function IndividualAssets({
                 stroke={holdingColors[h.assetId]}
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: holdingColors[h.assetId], strokeWidth: 0 }}
+                activeDot={{
+                  r: 4,
+                  fill: holdingColors[h.assetId],
+                  strokeWidth: 0,
+                }}
               />
             ))}
           </LineChart>

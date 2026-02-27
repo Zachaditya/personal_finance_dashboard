@@ -17,8 +17,9 @@ build
 .DS_Store
 *.pem
 
-# env files
+# env files (keep .env.example as template)
 .env*
+!.env.example
 
 # debug
 npm-debug.log*

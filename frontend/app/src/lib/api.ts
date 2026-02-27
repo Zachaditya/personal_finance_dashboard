@@ -1,5 +1,6 @@
 import { Asset, UserProfile, PortfolioPriceHistory } from "./types";
 
+// Set in .env.local as NEXT_PUBLIC_API_URL (e.g. http://localhost:8000)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const getAssets = async (): Promise<Asset[]> => {

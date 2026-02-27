@@ -1,9 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import type {
   Holding,
   AssetClass,
   UserProfile,
   PortfolioPriceHistory,
 } from "../lib/types";
+import { computeRatioSections } from "../lib/ratios";
 import { Graph } from "./Graph";
 import { IndividualAssets } from "./IndividualAssets";
 
@@ -30,103 +34,12 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-function formatPercent(value: number): string {
-  return `${(value * 100).toFixed(1)}%`;
-}
-
-const RISK_FREE_RATE = 0.04;
-
-function getRatioValueClass(label: string, value: string): string {
-  if (label === "Max drawdown") return "text-red-400";
-  if (label === "Sharpe ratio") {
-    const n = parseFloat(value);
-    if (isNaN(n) || value === "—") return "text-slate-300";
-    if (n >= 1) return "text-emerald-400";
-    if (n >= 0) return "text-yellow-400";
-    return "text-red-400";
-  }
+function getRatioValueClass(sentiment?: string): string {
+  if (sentiment === "positive") return "text-emerald-400";
+  if (sentiment === "neutral") return "text-slate-200";
+  if (sentiment === "slightly-negative") return "text-yellow-400";
+  if (sentiment === "very-negative") return "text-red-400";
   return "text-slate-200";
-}
-
-function computeRatios(
-  profile: UserProfile,
-  priceHistory: PortfolioPriceHistory,
-): { label: string; value: string }[] {
-  const { portfolio } = profile;
-  const { holdings } = portfolio;
-  const total = portfolio.totals.totalValueUSD;
-  const data = priceHistory.data;
-
-  const ratios: { label: string; value: string }[] = [];
-
-  const byClass = { stocks: 0, bonds: 0, cash: 0, crypto: 0 };
-  for (const h of holdings) {
-    byClass[h.assetClass] += h.valueUSD;
-  }
-  if (total > 0) {
-    ratios.push({
-      label: "Equity %",
-      value: formatPercent(byClass.stocks / total),
-    });
-    ratios.push({
-      label: "Bond %",
-      value: formatPercent(byClass.bonds / total),
-    });
-    ratios.push({
-      label: "Cash %",
-      value: formatPercent(byClass.cash / total),
-    });
-    if (byClass.crypto > 0) {
-      ratios.push({
-        label: "Crypto %",
-        value: formatPercent(byClass.crypto / total),
-      });
-    }
-  }
-
-  const maxHolding =
-    holdings.length > 0 ? Math.max(...holdings.map((h) => h.valueUSD)) : 0;
-  ratios.push({
-    label: "Top holding %",
-    value: total > 0 ? formatPercent(maxHolding / total) : "—",
-  });
-
-  if (data.length >= 2) {
-    const values = data.map((p) => p.valueUSD);
-    const dailyReturns = values
-      .slice(1)
-      .map((v, i) => (v - values[i]) / values[i]);
-    const mean = dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
-    const variance =
-      dailyReturns.reduce((s, r) => s + (r - mean) ** 2, 0) /
-      Math.max(1, dailyReturns.length - 1);
-    const annualizedVol = Math.sqrt(variance) * Math.sqrt(252);
-    ratios.push({
-      label: "Volatility (ann.)",
-      value: formatPercent(annualizedVol),
-    });
-
-    let peak = values[0];
-    let maxDD = 0;
-    for (let i = 0; i < values.length; i++) {
-      peak = Math.max(peak, values[i]);
-      const dd = values[i] / peak - 1;
-      maxDD = Math.min(maxDD, dd);
-    }
-    ratios.push({ label: "Max drawdown", value: formatPercent(maxDD) });
-
-    const n = data.length;
-    const cagr = Math.pow(values[n - 1] / values[0], 252 / n) - 1;
-    const sharpe =
-      annualizedVol > 0 ? (cagr - RISK_FREE_RATE) / annualizedVol : 0;
-    ratios.push({ label: "Sharpe ratio", value: sharpe.toFixed(2) });
-  } else {
-    ratios.push({ label: "Volatility (ann.)", value: "—" });
-    ratios.push({ label: "Max drawdown", value: "—" });
-    ratios.push({ label: "Sharpe ratio", value: "—" });
-  }
-
-  return ratios;
 }
 
 type DashboardProps = {
@@ -135,9 +48,14 @@ type DashboardProps = {
 };
 
 export function Dashboard({ profile, priceHistory }: DashboardProps) {
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const { netWorthUSD, portfolio } = profile;
   const { holdings } = portfolio;
-  const ratios = computeRatios(profile, priceHistory);
+  const ratioSections = computeRatioSections(profile, priceHistory);
+
+  const toggleSection = (id: string) => {
+    setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
@@ -174,21 +92,48 @@ export function Dashboard({ profile, priceHistory }: DashboardProps) {
               Financial Ratios
             </h2>
           </div>
-          <div className="px-5 py-4">
-            <table className="w-full">
-              <tbody className="divide-y divide-slate-800/60">
-                {ratios.map(({ label, value }) => (
-                  <tr key={label}>
-                    <td className="py-2.5 text-sm text-slate-400">{label}</td>
-                    <td
-                      className={`py-2.5 text-sm font-semibold text-right tabular-nums ${getRatioValueClass(label, value)}`}
+          <div className="divide-y divide-slate-800">
+            {ratioSections.map((section) => {
+              const isExpanded = expandedSections[section.id] ?? false;
+              return (
+                <div key={section.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-800/30 transition-colors"
+                  >
+                    <h3 className="text-base font-bold text-slate-200">
+                      {section.title}
+                    </h3>
+                    <span
+                      className={`text-slate-500 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                     >
-                      {value}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      ▼
+                    </span>
+                  </button>
+                  {isExpanded && (
+                    <div className="px-5 pb-4">
+                      <table className="w-full">
+                        <tbody className="divide-y divide-slate-800/60">
+                          {section.ratios.map(({ label, value, sentiment }) => (
+                            <tr key={label}>
+                              <td className="py-2.5">
+                                <span className="text-sm text-slate-200">{label}</span>
+                              </td>
+                              <td
+                                className={`py-2.5 text-sm font-semibold text-right tabular-nums ${getRatioValueClass(sentiment)}`}
+                              >
+                                {value}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
 
