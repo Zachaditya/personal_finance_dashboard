@@ -3,24 +3,12 @@ import {
   postCustomPortfolio,
   postCustomPriceHistory,
 } from "../src/lib/api";
-import { Chat } from "../src/components/Chat";
 import { Dashboard } from "../src/components/Dashboard";
+import { parseHoldings } from "../src/lib/parse-holdings";
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
-
-function parseHoldings(h: string): { assetId: string; valueUSD: number }[] {
-  return h
-    .split(",")
-    .map((pair) => {
-      const sep = pair.lastIndexOf(":");
-      const assetId = decodeURIComponent(pair.slice(0, sep));
-      const valueUSD = Number(pair.slice(sep + 1)) || 0;
-      return { assetId, valueUSD };
-    })
-    .filter((holding) => holding.valueUSD > 0);
-}
 
 export default async function DashboardPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -40,10 +28,5 @@ export default async function DashboardPage({ searchParams }: Props) {
     postCustomPriceHistory(holdings),
   ]);
 
-  return (
-    <>
-      <Dashboard profile={profile} priceHistory={priceHistory} />
-      <Chat />
-    </>
-  );
+  return <Dashboard profile={profile} priceHistory={priceHistory} />;
 }

@@ -12,10 +12,17 @@ import {
 import type { PortfolioPriceHistory } from "../lib/types";
 
 const LINES = [
-  { key: "portfolio" as const, label: "Portfolio", color: "#34d399" },
+  { key: "portfolio" as const, label: "Portfolio", color: "#00b070" },
   { key: "sp500" as const, label: "S&P 500", color: "#60a5fa" },
-  { key: "bitcoin" as const, label: "Bitcoin", color: "#f59e0b" },
+  { key: "bitcoin" as const, label: "Bitcoin", color: "#c084fc" },
 ] as const;
+
+// Light theme chart internals
+const TOOLTIP_BG = "#ffffff";
+const TOOLTIP_BORDER = "#e5e7eb";
+const INK_1 = "#1a1a1a";
+const INK_2 = "#4b5563";
+const INK_3 = "#6b7280";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -72,11 +79,11 @@ export function Graph({ priceHistory }: GraphProps) {
 
   if (data.length === 0) {
     return (
-      <section className="rounded-xl bg-slate-900 p-5 border border-slate-800 h-full flex flex-col">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+      <section className="rounded-xl bg-white p-5 border border-[#e5e7eb] h-full flex flex-col shadow-sm">
+        <h2 className="text-xs font-medium text-ink-3 uppercase tracking-wider mb-3">
           Portfolio Value Over Time
         </h2>
-        <p className="text-sm text-slate-500">No price history available.</p>
+        <p className="text-sm text-ink-3">No price history available.</p>
       </section>
     );
   }
@@ -91,10 +98,8 @@ export function Graph({ priceHistory }: GraphProps) {
       ? chartData.map((p) => p.bitcoinValue).filter((v): v is number => v != null)
       : [];
   const allValues = [...portfolioValues, ...sp500Values, ...bitcoinValues];
-  const min =
-    allValues.length > 0 ? Math.min(...allValues) : 0;
-  const max =
-    allValues.length > 0 ? Math.max(...allValues) : 100000;
+  const min = allValues.length > 0 ? Math.min(...allValues) : 0;
+  const max = allValues.length > 0 ? Math.max(...allValues) : 100000;
   const padding = (max - min) * 0.1 || 1000;
   const yMin = Math.floor((min - padding) / 1000) * 1000;
   const yMax = Math.ceil((max + padding) / 1000) * 1000;
@@ -111,9 +116,9 @@ export function Graph({ priceHistory }: GraphProps) {
   ].filter((c) => c.hasData);
 
   return (
-    <section className="rounded-xl bg-slate-900 p-5 border border-slate-800">
+    <section className="rounded-xl bg-white p-5 border border-[#e5e7eb] shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <h2 className="text-xs font-medium text-ink-3 uppercase tracking-wider">
           Portfolio Value Over Time
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -127,8 +132,8 @@ export function Graph({ priceHistory }: GraphProps) {
                 onClick={() => toggleLine(key)}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                   isOn
-                    ? "bg-slate-700 text-slate-100 ring-1 ring-slate-600"
-                    : "bg-slate-800/50 text-slate-500 hover:bg-slate-800"
+                    ? "bg-navy-800 text-ink-1 ring-1 ring-[#e5e7eb]"
+                    : "bg-navy-800/50 text-ink-4 hover:bg-navy-800"
                 }`}
               >
                 <span
@@ -148,14 +153,14 @@ export function Graph({ priceHistory }: GraphProps) {
               dataKey="date"
               ticks={xTicks}
               tickFormatter={formatDateShort}
-              tick={{ fontSize: 11, fill: "#64748b" }}
-              axisLine={{ stroke: "#1e293b" }}
+              tick={{ fontSize: 11, fill: INK_3, fontFamily: "var(--font-plex-mono)" }}
+              axisLine={{ stroke: TOOLTIP_BORDER }}
               tickLine={false}
             />
             <YAxis
               domain={[yMin, yMax]}
               tickFormatter={(v: number) => formatCurrency(v)}
-              tick={{ fontSize: 11, fill: "#64748b" }}
+              tick={{ fontSize: 11, fill: INK_3, fontFamily: "var(--font-plex-mono)" }}
               axisLine={false}
               tickLine={false}
               width={90}
@@ -166,24 +171,26 @@ export function Graph({ priceHistory }: GraphProps) {
               }
               labelFormatter={(label) => formatDateFull(String(label))}
               contentStyle={{
-                backgroundColor: "#1e293b",
-                border: "1px solid #334155",
-                borderRadius: "8px",
+                backgroundColor: TOOLTIP_BG,
+                border: `1px solid ${TOOLTIP_BORDER}`,
+                borderRadius: "10px",
                 fontSize: "13px",
-                color: "#f1f5f9",
+                color: INK_1,
+                fontFamily: "var(--font-plex-sans)",
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
               }}
-              labelStyle={{ color: "#94a3b8", marginBottom: "4px" }}
-              itemStyle={{ color: "#f1f5f9" }}
+              labelStyle={{ color: INK_2, marginBottom: "4px" }}
+              itemStyle={{ color: INK_1 }}
             />
             {visible.portfolio && (
               <Line
                 type="monotone"
                 dataKey="valueUSD"
                 name="Portfolio"
-                stroke="#34d399"
+                stroke="#00b070"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: "#34d399", strokeWidth: 0 }}
+                activeDot={{ r: 4, fill: "#00b070", strokeWidth: 0 }}
               />
             )}
             {visible.sp500 && sp500 && sp500.length > 0 && (
@@ -203,11 +210,11 @@ export function Graph({ priceHistory }: GraphProps) {
                 type="monotone"
                 dataKey="bitcoinValue"
                 name="Bitcoin"
-                stroke="#f59e0b"
+                stroke="#c084fc"
                 strokeWidth={2}
                 dot={false}
                 connectNulls
-                activeDot={{ r: 4, fill: "#f59e0b", strokeWidth: 0 }}
+                activeDot={{ r: 4, fill: "#c084fc", strokeWidth: 0 }}
               />
             )}
           </LineChart>

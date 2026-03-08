@@ -1,4 +1,4 @@
-import { Asset, UserProfile, PortfolioPriceHistory } from "./types";
+import { Asset, UserProfile, PortfolioPriceHistory, OnboardingSubmitRequest, OnboardingSubmitResponse } from "./types";
 
 // Set in .env.local as NEXT_PUBLIC_API_URL (e.g. http://localhost:8000)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -48,6 +48,42 @@ export const postCustomPriceHistory = async (
     });
     if (!response.ok) {
         throw new Error(`Failed to fetch custom price history: ${response.statusText}`);
+    }
+    return response.json();
+}
+
+export type UserOnboardingResponse = {
+    onboarding: (OnboardingSubmitRequest & {
+        result?: {
+            debtToIncomeRatio: number;
+            savingsRate: number;
+            netWorthUSD: number;
+            portfolioScore?: number;
+            insights?: string[];
+            actionItems?: string[];
+            portfolioInsights?: string[];
+        };
+    }) | null;
+};
+
+export const getUserOnboarding = async (): Promise<UserOnboardingResponse> => {
+    const response = await fetch(`${API_URL}/user/onboarding`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch user onboarding: ${response.statusText}`);
+    }
+    return response.json();
+};
+
+export const postOnboardingSubmit = async (
+    request: OnboardingSubmitRequest
+): Promise<OnboardingSubmitResponse> => {
+    const response = await fetch(`${API_URL}/onboarding/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+        throw new Error(`Onboarding submit failed: ${response.statusText}`);
     }
     return response.json();
 }

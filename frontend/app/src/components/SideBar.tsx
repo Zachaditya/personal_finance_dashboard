@@ -2,34 +2,57 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const navItems = [
-  { href: "/", label: "Select Assets", pathMatch: ["/", "/select"] },
-  { href: "/dashboard", label: "Dashboard", pathMatch: ["/dashboard"] },
+  { href: "/health", label: "Health", pathMatch: ["/health"], icon: "◆" },
+  {
+    href: "/pdashboard",
+    label: "Portfolio",
+    pathMatch: ["/pdashboard"],
+    icon: "▣",
+  },
+  { href: "/advisor", label: "AI Advisor", pathMatch: ["/advisor"], icon: "◈" },
 ] as const;
 
 export function SideBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const h = searchParams.get("h");
+  const [savedHoldings, setSavedHoldings] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      setSavedHoldings(localStorage.getItem("lastHoldings"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const effectiveH = h ?? savedHoldings;
 
   return (
-    <aside className="fixed left-0 top-0 z-20 flex h-screen w-56 flex-col border-r border-slate-800 bg-slate-950/95 backdrop-blur-md">
-      <div className="flex items-center gap-2.5 border-b border-slate-800 px-5 py-4">
-        <span className="text-emerald-400 text-lg leading-none">◈</span>
-        <span className="text-sm font-semibold text-slate-100 tracking-tight">
-          Portfolio Dashboard
+    <aside className="fixed left-0 top-0 z-20 flex h-screen w-52 flex-col border-r border-[#e5e7eb] bg-white shadow-sm">
+      {/* Logo */}
+      <div className="flex items-center gap-2.5 border-b border-[#e5e7eb] px-5 py-4">
+        <span className="text-gold-400 text-lg leading-none">◈</span>
+        <span className="text-sm font-semibold text-ink-1 tracking-tight">
+          Finfolio
         </span>
       </div>
+
+      {/* Nav */}
       <nav className="flex flex-1 flex-col gap-0.5 p-3">
-        {navItems.map(({ href, label, pathMatch }) => {
+        {navItems.map(({ href, label, pathMatch, icon }) => {
           const isActive = pathMatch.some((p) =>
-            p === "/" ? pathname === "/" : pathname.startsWith(p)
+            p === "/" ? pathname === "/" : pathname.startsWith(p),
           );
           const dashboardHref =
-            href === "/dashboard" && h ? `/dashboard?h=${h}` : href;
+            href === "/pdashboard" && effectiveH
+              ? `/pdashboard?h=${effectiveH}`
+              : href;
           const isDashboardDisabled =
-            href === "/dashboard" && !h && pathname !== "/dashboard";
+            href === "/pdashboard" && !effectiveH && pathname !== "/pdashboard";
 
           return (
             <Link
@@ -37,22 +60,35 @@ export function SideBar() {
               href={isDashboardDisabled ? "#" : dashboardHref}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 isDashboardDisabled
-                  ? "cursor-not-allowed text-slate-600"
+                  ? "cursor-not-allowed text-ink-4"
                   : isActive
-                    ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30"
-                    : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-200"
+                    ? "bg-gold-400/10 text-gold-400 ring-1 ring-gold-400/20"
+                    : "text-ink-3 hover:bg-navy-800 hover:text-ink-2"
               }`}
               aria-current={isActive ? "page" : undefined}
               onClick={(e) => isDashboardDisabled && e.preventDefault()}
             >
-              <span className="text-base opacity-80">
-                {label === "Select Assets" ? "◇" : "▣"}
-              </span>
+              <span className="text-base opacity-75">{icon}</span>
               {label}
             </Link>
           );
         })}
       </nav>
+
+      {/* Select assets link at bottom */}
+      <div className="border-t border-[#e5e7eb] p-3">
+        <Link
+          href="/select"
+          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+            pathname === "/select"
+              ? "bg-gold-400/10 text-gold-400 ring-1 ring-gold-400/20"
+              : "text-ink-3 hover:bg-navy-800 hover:text-ink-2"
+          }`}
+        >
+          <span className="text-base opacity-75">＋</span>
+          Select Assets
+        </Link>
+      </div>
     </aside>
   );
 }

@@ -11,30 +11,36 @@ import {
 } from "recharts";
 import type { PortfolioPriceHistory, Holding } from "../lib/types";
 
-// Distinct colors that read well on slate-900
 const PALETTE = [
-  "#34d399", // emerald
+  "#00b070", // karma green
   "#60a5fa", // blue
-  "#f59e0b", // amber
   "#a78bfa", // violet
+  "#34d399", // emerald
   "#f87171", // red
   "#fb923c", // orange
   "#38bdf8", // sky
   "#4ade80", // green
   "#e879f9", // fuchsia
-  "#94a3b8", // slate
+  "#a8b4cc", // ink-2
 ];
 
-// Defined outside JSX to avoid double-brace parse issues
+const TOOLTIP_BG = "#ffffff";
+const TOOLTIP_BORDER = "#e5e7eb";
+const INK_1 = "#1a1a1a";
+const INK_2 = "#4b5563";
+const INK_3 = "#6b7280";
+
 const TOOLTIP_STYLE = {
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: "8px",
+  backgroundColor: TOOLTIP_BG,
+  border: `1px solid ${TOOLTIP_BORDER}`,
+  borderRadius: "10px",
   fontSize: "13px",
-  color: "#f1f5f9",
+  color: INK_1,
+  fontFamily: "var(--font-plex-sans)",
+  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
 };
-const TOOLTIP_LABEL_STYLE = { color: "#94a3b8", marginBottom: "4px" };
-const TOOLTIP_ITEM_STYLE = { color: "#f1f5f9" };
+const TOOLTIP_LABEL_STYLE = { color: INK_2, marginBottom: "4px" };
+const TOOLTIP_ITEM_STYLE = { color: INK_1 };
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -80,7 +86,6 @@ export function IndividualAssets({
 }: IndividualAssetsProps) {
   const { data } = priceHistory;
 
-  // Assign a stable color per holding
   const holdingColors = useMemo(
     () =>
       Object.fromEntries(
@@ -89,7 +94,6 @@ export function IndividualAssets({
     [holdings],
   );
 
-  // All holdings visible by default
   const [visible, setVisible] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(holdings.map((h) => [h.assetId, true])),
   );
@@ -104,7 +108,6 @@ export function IndividualAssets({
     setVisible(Object.fromEntries(holdings.map((h) => [h.assetId, next])));
   };
 
-  // weight[assetId] = fraction of portfolio that holding represents
   const weights = useMemo(
     () =>
       Object.fromEntries(
@@ -116,7 +119,6 @@ export function IndividualAssets({
     [holdings, totalValueUSD],
   );
 
-  // Cash holdings (e.g. CASH_USD) have zero volatility - value stays constant
   const cashTotal = useMemo(
     () =>
       holdings
@@ -138,8 +140,6 @@ export function IndividualAssets({
     [holdings, riskyTotal],
   );
 
-  // Each row: { date, [assetId]: value, ... }
-  // Cash: constant value (no volatility). Risky assets: share of (portfolio - cash) over time.
   const chartData = useMemo(
     () =>
       data.map((p) => {
@@ -159,16 +159,15 @@ export function IndividualAssets({
 
   if (data.length === 0 || holdings.length === 0) {
     return (
-      <section className="rounded-xl bg-slate-900 p-5 border border-slate-800">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+      <section className="rounded-xl bg-white p-5 border border-[#e5e7eb] shadow-sm">
+        <h2 className="text-xs font-medium text-ink-3 uppercase tracking-wider mb-3">
           Individual Holdings
         </h2>
-        <p className="text-sm text-slate-500">No data available.</p>
+        <p className="text-sm text-ink-3">No data available.</p>
       </section>
     );
   }
 
-  // Y-axis domain from currently visible holdings only
   const visibleIds = holdings
     .filter((h) => visible[h.assetId])
     .map((h) => h.assetId);
@@ -186,32 +185,32 @@ export function IndividualAssets({
     .filter((_, i) => i % tickInterval === 0)
     .map((p) => p.date as string);
 
-  // Pre-filter to visible holdings for clean Line rendering
   const visibleHoldings = holdings.filter((h) => visible[h.assetId]);
 
+  // suppress unused warning
+  void weights;
+
   return (
-    <section className="rounded-xl bg-slate-900 p-5 border border-slate-800">
-      {/* Header */}
+    <section className="rounded-xl bg-white p-5 border border-[#e5e7eb] shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3 mb-4">
         <div>
-          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <h2 className="text-xs font-medium text-ink-3 uppercase tracking-wider">
             Individual Holdings Over Time
           </h2>
-          <p className="text-xs text-slate-600 mt-0.5">
+          <p className="text-xs text-ink-4 mt-0.5">
             Estimated by portfolio weight · toggle to compare
           </p>
         </div>
 
-        {/* Toggle controls */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={toggleAll}
-            className="text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors whitespace-nowrap"
+            className="text-xs font-medium text-ink-3 hover:text-ink-2 transition-colors whitespace-nowrap"
           >
             {allOn ? "Hide all" : "Show all"}
           </button>
-          <span className="text-slate-700 text-xs">|</span>
+          <span className="text-ink-4 text-xs">|</span>
           <div className="flex flex-wrap gap-1.5">
             {holdings.map((h) => {
               const color = holdingColors[h.assetId];
@@ -223,13 +222,15 @@ export function IndividualAssets({
                   onClick={() => toggleHolding(h.assetId)}
                   className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     isOn
-                      ? "bg-slate-700 text-slate-100 ring-1 ring-slate-600"
-                      : "bg-slate-800/50 text-slate-500 hover:bg-slate-800"
+                      ? "bg-navy-800 text-ink-1 ring-1 ring-[#e5e7eb]"
+                      : "bg-navy-800/50 text-ink-4 hover:bg-navy-800"
                   }`}
                 >
                   <span
                     className="h-2 w-4 rounded-sm shrink-0"
-                    style={{ backgroundColor: isOn ? color : "#334155" }}
+                    style={{
+                      backgroundColor: isOn ? color : "rgba(255,255,255,0.10)",
+                    }}
                   />
                   {h.ticker ?? h.name}
                 </button>
@@ -239,7 +240,6 @@ export function IndividualAssets({
         </div>
       </div>
 
-      {/* Chart */}
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
@@ -247,14 +247,22 @@ export function IndividualAssets({
               dataKey="date"
               ticks={xTicks}
               tickFormatter={formatDateShort}
-              tick={{ fontSize: 11, fill: "#64748b" }}
-              axisLine={{ stroke: "#1e293b" }}
+              tick={{
+                fontSize: 11,
+                fill: INK_3,
+                fontFamily: "var(--font-plex-mono)",
+              }}
+              axisLine={{ stroke: TOOLTIP_BORDER }}
               tickLine={false}
             />
             <YAxis
               domain={[yMin, yMax]}
               tickFormatter={formatCurrency}
-              tick={{ fontSize: 11, fill: "#64748b" }}
+              tick={{
+                fontSize: 11,
+                fill: INK_3,
+                fontFamily: "var(--font-plex-mono)",
+              }}
               axisLine={false}
               tickLine={false}
               width={90}

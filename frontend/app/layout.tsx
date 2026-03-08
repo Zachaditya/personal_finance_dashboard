@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { SideBar } from "./src/components/SideBar";
+import { LayoutShell } from "./src/components/LayoutShell";
 
-const inter = Inter({ subsets: ["latin"] });
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-sans",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-mono",
+});
 
 export const metadata: Metadata = {
   title: "Portfolio Dashboard",
@@ -18,13 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <div className="flex min-h-screen">
-          <Suspense fallback={null}>
-            <SideBar />
-          </Suspense>
-          <main className="flex-1 pl-56">{children}</main>
-        </div>
+      <body
+        className={`${plexSans.variable} ${plexMono.variable} font-sans antialiased`}
+      >
+        <Suspense fallback={null}>
+          <LayoutShell>{children}</LayoutShell>
+        </Suspense>
       </body>
     </html>
   );

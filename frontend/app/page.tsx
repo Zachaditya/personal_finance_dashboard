@@ -1,5 +1,5 @@
-import SelectPage from "./select/page";
+import { OnboardingWizard } from "./src/components/onboarding/OnboardingWizard";
 
 export default function Home() {
-  return <SelectPage />;
+  return <OnboardingWizard />;
 }

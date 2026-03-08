@@ -1,0 +1,47 @@
+{
+  "income": 100000.0,
+  "savings": 50000.0,
+  "creditScore": 750,
+  "totalDebt": 75000.0,
+  "holdings": [
+    {
+      "assetId": "BND",
+      "valueUSD": 50000.0
+    }
+  ],
+  "debtBreakdown": [
+    {
+      "category": "Student Loans",
+      "balanceUSD": 60000.0
+    },
+    {
+      "category": "Auto Loans",
+      "balanceUSD": 10000.0
+    },
+    {
+      "category": "Credit Cards",
+      "balanceUSD": 5000.0
+    }
+  ],
+  "result": {
+    "debtToIncomeRatio": 0.75,
+    "savingsRate": 0.5,
+    "netWorthUSD": 25000.0,
+    "portfolioScore": 710,
+    "insights": [
+      "The debt-to-income ratio is 75%, which is considered unhealthy and indicates a high level of debt relative to income.",
+      "The savings rate is 50%, which is excellent and shows strong financial discipline.",
+      "The portfolio is heavily concentrated in a single holding (BND), indicating a lack of diversification."
+    ],
+    "actionItems": [
+      "Consider increasing your monthly payments to reduce student loan debt more aggressively.",
+      "Aim to diversify your portfolio by adding different asset classes or sectors to reduce concentration risk.",
+      "Keep saving aggressively, but consider allocating a portion of savings towards investments to grow wealth."
+    ],
+    "portfolioInsights": [
+      "Investing entirely in BND may limit your capital growth - explore options like equities or real estate.",
+      "Given current market trends, consider the impact of interest rates on your bond holdings and evaluate alternatives.",
+      "Review your portfolio regularly to assess performance and adjust allocations based on market conditions."
+    ]
+  }
+}

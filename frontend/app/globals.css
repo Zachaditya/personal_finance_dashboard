@@ -1,12 +1,42 @@
 @import "tailwindcss";
 
+@theme {
+  /* Light surface scale — Credit Karma style */
+  --color-navy-950: #f5f7fa;
+  --color-navy-900: #ffffff;
+  --color-navy-800: #f0f2f5;
+  --color-navy-700: #e5e7eb;
+  --color-navy-600: #d1d5db;
+
+  /* Text hierarchy */
+  --color-ink-1: #1a1a1a;
+  --color-ink-2: #4b5563;
+  --color-ink-3: #6b7280;
+  --color-ink-4: #9ca3af;
+
+  /* Brand: Karma Green (Credit Karma teal) */
+  --color-gold-300: #00c97a;
+  --color-gold-400: #00b070;
+  --color-gold-500: #009a63;
+  --color-gold-600: #008555;
+
+  /* Light theme borders */
+  --color-border: #e5e7eb;
+  --color-border-muted: #f3f4f6;
+
+  /* Fonts */
+  --font-sans: var(--font-plex-sans), "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
 body {
-  background-color: #020617;
+  background-color: #f5f7fa;
+  color: #1a1a1a;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #334155 #0f172a;
+  scrollbar-color: #d1d5db #f0f2f5;
 }
 
 *::-webkit-scrollbar {
@@ -15,14 +45,14 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f0f2f5;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #d1d5db;
   border-radius: 3px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #9ca3af;
 }

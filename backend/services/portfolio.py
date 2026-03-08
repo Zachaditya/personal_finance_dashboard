@@ -4,12 +4,13 @@ from typing import Union
 
 import numpy as np
 
-from .finance import get_returns, get_sp500_returns, get_btc_returns
-from .schemas import (
+from app.finance import get_returns, get_sp500_returns, get_btc_returns
+from app.schemas import (
     AllocationApprox,
     Asset,
     CustomPortfolioRequest,
     Holding,
+    OnboardingSubmitRequest,
     Portfolio,
     PortfolioPriceHistory,
     PricePoint,
@@ -30,6 +31,15 @@ def load_json_file(filepath: Union[str, Path]) -> dict:
         path = _get_data_dir() / path
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def save_json_file(filepath: Union[str, Path], data: dict) -> None:
+    """Write a dict to a JSON file."""
+    path = Path(filepath)
+    if not path.is_absolute():
+        path = _get_data_dir() / path
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
 
 def load_assets() -> list[Asset]:
@@ -162,3 +172,47 @@ def get_custom_price_history(request: CustomPortfolioRequest) -> PortfolioPriceH
     sp500 = _compute_sp500_benchmark(total_value, aligned.index)
     bitcoin = _compute_bitcoin_benchmark(total_value, aligned.index)
     return PortfolioPriceHistory(data=data, sp500=sp500, bitcoin=bitcoin)
+
+
+def process_onboarding_submission(request: OnboardingSubmitRequest) -> dict:
+    portfolio_request = CustomPortfolioRequest(holdings=request.holdings)
+    profile = build_custom_profile(portfolio_request)
+
+    portfolio_value = profile.portfolio.totals.totalValueUSD
+    net_worth = portfolio_value + request.savings - request.totalDebt
+    debt_to_income = (request.totalDebt / request.income) if request.income > 0 else 0.0
+    savings_rate = (request.savings / request.income) if request.income > 0 else 0.0
+
+    return {
+        "profile": profile,
+        "debtToIncomeRatio": round(debt_to_income, 4),
+        "savingsRate": round(savings_rate, 4),
+        "netWorthUSD": round(net_worth, 2),
+    }
+
+
+def save_user_onboarding(
+    request: OnboardingSubmitRequest,
+    result: dict | None = None,
+    portfolio_score: int | None = None,
+    insights: list[str] | None = None,
+    action_items: list[str] | None = None,
+    portfolio_insights: list[str] | None = None,
+) -> None:
+    """Persist onboarding quiz responses and optional computed result to user_onboarding.json."""
+    data = request.model_dump()
+    if result is not None:
+        data["result"] = {
+            "debtToIncomeRatio": result["debtToIncomeRatio"],
+            "savingsRate": result["savingsRate"],
+            "netWorthUSD": result["netWorthUSD"],
+        }
+        if portfolio_score is not None:
+            data["result"]["portfolioScore"] = portfolio_score
+        if insights is not None:
+            data["result"]["insights"] = insights
+        if action_items is not None:
+            data["result"]["actionItems"] = action_items
+        if portfolio_insights is not None:
+            data["result"]["portfolioInsights"] = portfolio_insights
+    save_json_file("user_onboarding.json", data)
