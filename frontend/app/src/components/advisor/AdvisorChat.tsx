@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { postAdvisorChat } from "../../lib/advisor-api";
+import { postAdvisorChat } from "../../lib/api";
 import type { ChatMessage as ChatMessageType, FinancialContext } from "../../lib/types";
 import { ChatMessage } from "./ChatMessage";
 
@@ -21,6 +21,7 @@ export function AdvisorChat({ context }: Props) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [demoDisabled, setDemoDisabled] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,7 +45,12 @@ export function AdvisorChat({ context }: Props) {
         history: messages.slice(-20),
         context,
       });
-      setMessages([...newHistory, { role: "assistant", content: res.reply }]);
+      if (res.reply === "__DEMO_DISABLED__") {
+        setDemoDisabled(true);
+        setMessages(messages);
+      } else {
+        setMessages([...newHistory, { role: "assistant", content: res.reply }]);
+      }
     } catch {
       setError("Failed to get a response. Please try again.");
     } finally {
@@ -63,7 +69,20 @@ export function AdvisorChat({ context }: Props) {
     <div className="rounded-2xl border border-[#e5e7eb] bg-white flex flex-col h-[600px] shadow-sm">
       {/* Message area */}
       <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        {messages.length === 0 && (
+        {demoDisabled ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
+            <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-navy-800 border border-[#e5e7eb] flex items-center justify-center">
+              <span className="text-ink-3 text-xl">◈</span>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-ink-1">AI Chat Unavailable in Demo Mode</p>
+              <p className="text-xs text-ink-3 mt-2 max-w-sm leading-relaxed">
+                Live AI chat is disabled in the demo environment to manage API costs.
+                Card recommendations and health analysis are fully functional.
+              </p>
+            </div>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
             <div>
               <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-gold-400/10 border border-gold-400/20 flex items-center justify-center">
@@ -87,7 +106,7 @@ export function AdvisorChat({ context }: Props) {
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
         {messages.map((msg, i) => (
           <ChatMessage key={i} message={msg} />
@@ -125,14 +144,15 @@ export function AdvisorChat({ context }: Props) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask anything about your finances… (Enter to send)"
+          placeholder={demoDisabled ? "Chat disabled in demo mode" : "Ask anything about your finances… (Enter to send)"}
           rows={1}
-          className="flex-1 resize-none rounded-xl border border-[#e5e7eb] bg-navy-800 px-4 py-3 text-sm text-ink-1 placeholder-ink-4 focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/30 transition-colors"
+          disabled={demoDisabled}
+          className="flex-1 resize-none rounded-xl border border-[#e5e7eb] bg-navy-800 px-4 py-3 text-sm text-ink-1 placeholder-ink-4 focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           type="button"
           onClick={() => sendMessage()}
-          disabled={!input.trim() || loading}
+          disabled={!input.trim() || loading || demoDisabled}
           className="rounded-xl bg-gold-400 hover:bg-gold-300 disabled:bg-navy-800 disabled:text-ink-4 px-4 py-3 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed shrink-0"
         >
           Send

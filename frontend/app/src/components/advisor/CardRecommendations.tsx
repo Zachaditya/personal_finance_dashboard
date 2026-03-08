@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { postAdvisorCards } from "../../lib/advisor-api";
+import { postAdvisorCards } from "../../lib/api";
 import type { FinancialContext, RankedCard } from "../../lib/types";
 import { CardTile } from "./CardTile";
 

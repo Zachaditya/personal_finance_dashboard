@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { PortfolioPriceHistory, Holding } from "../lib/types";
+import { formatCurrency } from "../lib/formatters";
 
 const PALETTE = [
   "#00b070", // karma green
@@ -41,15 +42,6 @@ const TOOLTIP_STYLE = {
 };
 const TOOLTIP_LABEL_STYLE = { color: INK_2, marginBottom: "4px" };
 const TOOLTIP_ITEM_STYLE = { color: INK_1 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function formatDateShort(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");

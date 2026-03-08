@@ -1,0 +1,274 @@
+[
+  {
+    "id": "chase-sapphire-preferred",
+    "name": "Chase Sapphire Preferred",
+    "issuer": "Chase",
+    "annualFee": 95.0,
+    "rewardsSummary": "3x on dining, 2x on travel, 1x on everything else.",
+    "categories": [
+      "travel",
+      "dining"
+    ],
+    "approvalLikelihood": "good",
+    "matchScore": 90,
+    "aiReasoning": "This card is ideal for your travel and dining spending habits, and the 60,000 point welcome bonus enhances its appeal. However, your credit score is just below the threshold for excellent approval likelihood.",
+    "highlights": [
+      "60,000 point welcome bonus (worth ~$750 toward travel)",
+      "No foreign transaction fees",
+      "Primary car rental insurance"
+    ],
+    "creditScoreRequired": 700
+  },
+  {
+    "id": "amex-gold",
+    "name": "American Express Gold Card",
+    "issuer": "American Express",
+    "annualFee": 250.0,
+    "rewardsSummary": "4x at restaurants, 4x at US supermarkets (up to $25k/yr), 3x on flights, 1x on other.",
+    "categories": [
+      "dining",
+      "groceries"
+    ],
+    "approvalLikelihood": "good",
+    "matchScore": 88,
+    "aiReasoning": "With high rewards on dining and grocery spending, this card suits your lifestyle, and the annual credits can offset the fee. Your strong credit score supports good approval odds.",
+    "highlights": [
+      "$120 annual dining credit (Grubhub, Cheesecake Factory, etc.)",
+      "4x at restaurants",
+      "No foreign transaction fees"
+    ],
+    "creditScoreRequired": 700
+  },
+  {
+    "id": "chase-freedom-unlimited",
+    "name": "Chase Freedom Unlimited",
+    "issuer": "Chase",
+    "annualFee": 0.0,
+    "rewardsSummary": "5% on Chase travel, 3% on dining and drugstores, 1.5% on all other purchases.",
+    "categories": [
+      "cashback",
+      "dining"
+    ],
+    "approvalLikelihood": "excellent",
+    "matchScore": 85,
+    "aiReasoning": "This card offers versatile cashback on dining and is an excellent everyday no-fee card, especially with your credit score. The signup bonus is also appealing for fast spenders.",
+    "highlights": [
+      "$200 cash bonus after $500 spend in first 3 months",
+      "No annual fee",
+      "1.5% flat on everything (better than most no-fee cards)"
+    ],
+    "creditScoreRequired": 670
+  },
+  {
+    "id": "citi-double-cash",
+    "name": "Citi Double Cash Card",
+    "issuer": "Citi",
+    "annualFee": 0.0,
+    "rewardsSummary": "2% cash back on all purchases (1% when you buy + 1% when you pay).",
+    "categories": [
+      "cashback"
+    ],
+    "approvalLikelihood": "excellent",
+    "matchScore": 80,
+    "aiReasoning": "As a flat-rate cashback card with no annual fee, it simplifies rewards for your daily spending. Given your credit score, approval is highly likely.",
+    "highlights": [
+      "No annual fee",
+      "Flat 2% on everything \u2014 no category tracking needed",
+      "0% intro APR on balance transfers for 18 months"
+    ],
+    "creditScoreRequired": 670
+  },
+  {
+    "id": "capital-one-quicksilver",
+    "name": "Capital One Quicksilver Cash Rewards",
+    "issuer": "Capital One",
+    "annualFee": 0.0,
+    "rewardsSummary": "1.5% unlimited cash back on all purchases.",
+    "categories": [
+      "cashback"
+    ],
+    "approvalLikelihood": "excellent",
+    "matchScore": 78,
+    "aiReasoning": "This card provides unlimited 1.5% cashback on all purchases with no fees, making it an accessible and straightforward option for your profile. You have a strong approval chance given your credit score.",
+    "highlights": [
+      "$200 cash bonus after $500 spend in 3 months",
+      "No annual fee",
+      "0% intro APR for 15 months"
+    ],
+    "creditScoreRequired": 640
+  },
+  {
+    "id": "wells-fargo-active-cash",
+    "name": "Wells Fargo Active Cash Card",
+    "issuer": "Wells Fargo",
+    "annualFee": 0.0,
+    "rewardsSummary": "Unlimited 2% cash rewards on all purchases.",
+    "categories": [
+      "cashback"
+    ],
+    "approvalLikelihood": "excellent",
+    "matchScore": 76,
+    "aiReasoning": "With unlimited 2% cash rewards on all purchases and no annual fee, this card aligns well with your financial needs. Your strong credit will likely lead to easy approval.",
+    "highlights": [
+      "$200 cash rewards bonus after $500 spend in 3 months",
+      "No annual fee",
+      "Unlimited 2% cash rewards \u2014 no caps, no categories"
+    ],
+    "creditScoreRequired": 670
+  },
+  {
+    "id": "capital-one-venture-x",
+    "name": "Capital One Venture X Rewards Credit Card",
+    "issuer": "Capital One",
+    "annualFee": 395.0,
+    "rewardsSummary": "10x on hotels and rental cars via Capital One Travel, 5x on flights via Capital One Travel, 2x on everything else.",
+    "categories": [
+      "travel"
+    ],
+    "approvalLikelihood": "fair",
+    "matchScore": 75,
+    "aiReasoning": "This card is geared towards frequent travelers, offering high rewards rates for travel-related purchases. Although your credit score is slightly below the excellent threshold, you still have a fair chance for approval.",
+    "highlights": [
+      "$300 annual Capital One Travel credit",
+      "10x on hotels and rental cars via Capital One Travel",
+      "Priority Pass + Capital One Lounge access"
+    ],
+    "creditScoreRequired": 740
+  },
+  {
+    "id": "chase-sapphire-reserve",
+    "name": "Chase Sapphire Reserve",
+    "issuer": "Chase",
+    "annualFee": 550.0,
+    "rewardsSummary": "10x on Chase travel, 3x on dining, 3x on other travel, 1x on everything else.",
+    "categories": [
+      "travel",
+      "dining"
+    ],
+    "approvalLikelihood": "low",
+    "matchScore": 70,
+    "aiReasoning": "While this card offers premium travel benefits, it requires a higher credit score for approval, which puts your chances at risk. Its high annual fee may not provide enough value relative to your spending patterns.",
+    "highlights": [
+      "$300 annual travel credit",
+      "Priority Pass lounge access",
+      "60,000 point welcome bonus"
+    ],
+    "creditScoreRequired": 750
+  },
+  {
+    "id": "amex-platinum",
+    "name": "The Platinum Card from American Express",
+    "issuer": "American Express",
+    "annualFee": 695.0,
+    "rewardsSummary": "5x on flights booked directly or via Amex Travel, 5x on prepaid hotels via Amex Travel, 1x on other.",
+    "categories": [
+      "travel"
+    ],
+    "approvalLikelihood": "low",
+    "matchScore": 68,
+    "aiReasoning": "This ultra-premium travel card is better suited for those with high spending on luxury travel experiences. Your current profile may not justify the high annual fee and may have low approval odds.",
+    "highlights": [
+      "$200 annual airline fee credit",
+      "Centurion lounge + Priority Pass access",
+      "80,000 Membership Rewards points after $8,000 spend in 6 months"
+    ],
+    "creditScoreRequired": 750
+  },
+  {
+    "id": "amex-blue-cash-preferred",
+    "name": "Blue Cash Preferred Card from American Express",
+    "issuer": "American Express",
+    "annualFee": 95.0,
+    "rewardsSummary": "6% at US supermarkets (up to $6k/yr), 6% on select US streaming, 3% on transit and gas, 1% on other.",
+    "categories": [
+      "groceries",
+      "gas"
+    ],
+    "approvalLikelihood": "good",
+    "matchScore": 65,
+    "aiReasoning": "As someone who likely spends on groceries and streaming, this card\u2019s high cashback rates can be beneficial. However, the annual fee might be a consideration with your current debt profile.",
+    "highlights": [
+      "Best-in-class 6% at US supermarkets",
+      "$250 welcome bonus after $3,000 spend in 6 months",
+      "0% intro APR for 12 months"
+    ],
+    "creditScoreRequired": 670
+  },
+  {
+    "id": "citi-simplicity",
+    "name": "Citi Simplicity Card",
+    "issuer": "Citi",
+    "annualFee": 0.0,
+    "rewardsSummary": "No rewards \u2014 designed for balance transfers and debt payoff.",
+    "categories": [
+      "balance-transfer"
+    ],
+    "approvalLikelihood": "excellent",
+    "matchScore": 60,
+    "aiReasoning": "With a focus on balance transfers, this card is a solid option for managing debt. The long intro periods offer flexibility, making it valuable given your existing credit card debt.",
+    "highlights": [
+      "0% intro APR on balance transfers for 21 months (one of the longest available)",
+      "No late fees, no penalty APR",
+      "No annual fee"
+    ],
+    "creditScoreRequired": 630
+  },
+  {
+    "id": "ink-business-cash",
+    "name": "Ink Business Cash Credit Card",
+    "issuer": "Chase",
+    "annualFee": 0.0,
+    "rewardsSummary": "5% on office supplies and internet/cable/phone (up to $25k/yr), 2% on gas and dining, 1% on other.",
+    "categories": [
+      "business"
+    ],
+    "approvalLikelihood": "good",
+    "matchScore": 55,
+    "aiReasoning": "If you have business-related expenses, this card can offer excellent rewards, but your current financial status suggests it may not be your primary need right now.",
+    "highlights": [
+      "No annual fee",
+      "$750 cash back welcome bonus after $6,000 spend in 3 months",
+      "Employee cards at no extra cost"
+    ],
+    "creditScoreRequired": 680
+  },
+  {
+    "id": "discover-it-student",
+    "name": "Discover it Student Cash Back",
+    "issuer": "Discover",
+    "annualFee": 0.0,
+    "rewardsSummary": "5% cash back in rotating quarterly categories (up to $1,500/quarter), 1% on all other purchases.",
+    "categories": [
+      "student",
+      "cashback"
+    ],
+    "approvalLikelihood": "fair",
+    "matchScore": 50,
+    "aiReasoning": "While this card is tailored for students, it can serve as a good introductory option if you're open to cashback categories. However, it may not provide sufficient rewards for your spending habits.",
+    "highlights": [
+      "Cashback Match \u2014 Discover doubles all cash back earned in year 1",
+      "No annual fee, no late fee on first late payment",
+      "Free FICO credit score monitoring"
+    ],
+    "creditScoreRequired": 580
+  },
+  {
+    "id": "apple-card",
+    "name": "Apple Card",
+    "issuer": "Goldman Sachs",
+    "annualFee": 0.0,
+    "rewardsSummary": "3% on Apple purchases and select merchants, 2% on Apple Pay purchases, 1% on all other.",
+    "categories": [
+      "cashback"
+    ],
+    "approvalLikelihood": "fair",
+    "matchScore": 45,
+    "aiReasoning": "This card may appeal to those in the Apple ecosystem, but its cashback structure might not sufficiently match your spending patterns compared to other options available to you.",
+    "highlights": [
+      "No annual fee, no late fees, no foreign transaction fees",
+      "Daily Cash deposited directly to Apple Cash",
+      "Transparent privacy-focused design"
+    ],
+    "creditScoreRequired": 600
+  }
+]

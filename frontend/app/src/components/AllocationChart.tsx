@@ -241,9 +241,9 @@ export function AllocationPieCard({
               formatter={(
                 value: number,
                 name: string,
-                props: { payload: ChartSegment }
+                props: { payload?: ChartSegment }
               ) => [
-                `${props.payload.pct.toFixed(1)}% · $${value.toLocaleString("en-US", {
+                `${props.payload?.pct.toFixed(1)}% · $${value.toLocaleString("en-US", {
                   maximumFractionDigits: 0,
                 })}`,
                 name,
@@ -303,7 +303,11 @@ export function AllocationBreakdownCard({
         Breakdown
       </h2>
 
-      <div className="overflow-hidden rounded-lg border border-[#e5e7eb] flex-1">
+      <div
+        className={`rounded-lg border border-[#e5e7eb] flex-1 min-h-0 ${
+          showAll ? "overflow-y-auto max-h-[220px]" : "overflow-hidden"
+        }`}
+      >
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e5e7eb] bg-navy-800/80">

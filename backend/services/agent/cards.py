@@ -1,23 +1,47 @@
 import json
-import os
 from pathlib import Path
-from typing import List, Dict
+from typing import List
 
-from dotenv import load_dotenv
-from openai import OpenAI
-
+from services.agent.client import client, MODEL_ID
 from app.schemas import FinancialContext, RankedCard, CardCategory, ApprovalLikelihood
+from app.config import settings
 
-load_dotenv()
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-MODEL_ID = "gpt-4o-mini"
+_cards_cache: list | None = None
+_demo_cards_cache: list[RankedCard] | None = None
 
 
 def _load_cards() -> list:
-    path = Path(__file__).resolve().parent.parent.parent / "data" / "credit_cards.json"
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    global _cards_cache
+    if _cards_cache is None:
+        path = Path(__file__).resolve().parent.parent.parent / "data" / "credit_cards.json"
+        with open(path, encoding="utf-8") as f:
+            _cards_cache = json.load(f)
+    return _cards_cache
+
+
+def _load_demo_cards() -> list[RankedCard]:
+    global _demo_cards_cache
+    if _demo_cards_cache is None:
+        path = Path(__file__).resolve().parent.parent.parent / "data" / "demo_ranked_cards.json"
+        with open(path, encoding="utf-8") as f:
+            raw = json.load(f)
+        _demo_cards_cache = [
+            RankedCard(
+                id=c["id"],
+                name=c["name"],
+                issuer=c["issuer"],
+                annualFee=c["annualFee"],
+                rewardsSummary=c["rewardsSummary"],
+                categories=[CardCategory(x) for x in c["categories"]],
+                approvalLikelihood=ApprovalLikelihood(c["approvalLikelihood"]),
+                matchScore=c["matchScore"],
+                aiReasoning=c["aiReasoning"],
+                highlights=c["highlights"],
+                creditScoreRequired=c["creditScoreRequired"],
+            )
+            for c in raw
+        ]
+    return _demo_cards_cache
 
 
 def _build_card_prompt(context: FinancialContext, cards: list) -> str:
@@ -70,6 +94,9 @@ Order cards by matchScore descending. Include all {len(cards)} cards."""
 
 def rank_cards(context: FinancialContext) -> List[RankedCard]:
     """Rank all credit cards for a user using GPT-4o-mini. Returns sorted list by matchScore."""
+    if settings.demo_mode:
+        return _load_demo_cards()
+
     cards = _load_cards()
     prompt = _build_card_prompt(context, cards)
 

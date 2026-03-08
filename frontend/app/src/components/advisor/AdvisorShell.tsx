@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FinancialContext, OnboardingData } from "../../lib/types";
+import { getStorage } from "../../lib/storage";
 import { AdvisorChat } from "./AdvisorChat";
 import { CardRecommendations } from "./CardRecommendations";
 
@@ -31,19 +32,13 @@ function ContextStatusBadge({ context }: { context: FinancialContext }) {
 
 export function AdvisorShell() {
   const [activeTab, setActiveTab] = useState<Tab>("chat");
-  const [financialContext, setFinancialContext] = useState<FinancialContext>({
-    onboarding: null,
-    portfolio: null,
-  });
+  const [financialContext, setFinancialContext] = useState<FinancialContext>({});
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("onboarding");
-      if (raw) {
-        const parsed = JSON.parse(raw) as OnboardingData;
-        setFinancialContext((prev) => ({ ...prev, onboarding: parsed }));
-      }
-    } catch { /* ignore */ }
+    const parsed = getStorage<OnboardingData>("onboarding");
+    if (parsed) {
+      setFinancialContext((prev) => ({ ...prev, onboarding: parsed }));
+    }
   }, []);
 
   return (

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getUserOnboarding, postCustomPortfolio } from "../src/lib/api";
-import type { OnboardingSubmitResponse } from "../src/lib/types";
+import type { OnboardingSubmitResponse, OnboardingData } from "../src/lib/types";
+import { getStorage } from "../src/lib/storage";
 import { AllocationChart } from "../src/components/AllocationChart";
 import { CreditScoreMeter } from "../src/components/CreditScoreMeter";
 import { MilestonesSection } from "../src/components/MilestonesSection";
@@ -23,30 +24,26 @@ export default function HealthPage() {
     let cancelled = false;
     const fallbackToLocalStorage = () => {
       if (cancelled) return;
-      try {
-        const resultRaw = localStorage.getItem("onboardingResult");
-        const onboardingRaw = localStorage.getItem("onboarding");
-        const localOnboarding = onboardingRaw ? JSON.parse(onboardingRaw) : null;
-        const resultData = resultRaw ? JSON.parse(resultRaw) : null;
-        if (resultData && localOnboarding) {
-          const netWorthUSD = localOnboarding.savings - localOnboarding.totalDebt;
-          setResult({ ...resultData, netWorthUSD });
-          setOnboarding({
-            totalDebt: localOnboarding.totalDebt,
-            creditScore: localOnboarding.creditScore,
-            debtBreakdown: localOnboarding.debtBreakdown ?? [],
-          });
-          if (resultData.profile?.portfolio?.holdings?.length) setProfile(resultData.profile);
-        } else if (resultData) {
-          setResult(resultData);
-          if (localOnboarding) setOnboarding({
-            totalDebt: localOnboarding.totalDebt,
-            creditScore: localOnboarding.creditScore,
-            debtBreakdown: localOnboarding.debtBreakdown ?? [],
-          });
-          if (resultData.profile?.portfolio?.holdings?.length) setProfile(resultData.profile);
-        }
-      } catch { /* ignore */ }
+      const resultData = getStorage<OnboardingSubmitResponse>("onboardingResult");
+      const localOnboarding = getStorage<OnboardingData>("onboarding");
+      if (resultData && localOnboarding) {
+        const netWorthUSD = localOnboarding.savings - localOnboarding.totalDebt;
+        setResult({ ...resultData, netWorthUSD });
+        setOnboarding({
+          totalDebt: localOnboarding.totalDebt,
+          creditScore: localOnboarding.creditScore,
+          debtBreakdown: localOnboarding.debtBreakdown ?? [],
+        });
+        if (resultData.profile?.portfolio?.holdings?.length) setProfile(resultData.profile);
+      } else if (resultData) {
+        setResult(resultData);
+        if (localOnboarding) setOnboarding({
+          totalDebt: localOnboarding.totalDebt,
+          creditScore: localOnboarding.creditScore,
+          debtBreakdown: localOnboarding.debtBreakdown ?? [],
+        });
+        if (resultData.profile?.portfolio?.holdings?.length) setProfile(resultData.profile);
+      }
     };
     getUserOnboarding()
       .then((res) => {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getStorage } from "../lib/storage";
 
 const navItems = [
   { href: "/health", label: "Health", pathMatch: ["/health"], icon: "◆" },
@@ -24,9 +25,7 @@ export function SideBar() {
   useEffect(() => {
     try {
       setSavedHoldings(localStorage.getItem("lastHoldings"));
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, []);
 
   const effectiveH = h ?? savedHoldings;

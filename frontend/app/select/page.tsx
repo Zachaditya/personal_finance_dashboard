@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAssets } from "../src/lib/api";
 import type { Asset, AssetClass } from "../src/lib/types";
+import { formatCurrency } from "../src/lib/formatters";
 
 const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
   cash: "Cash",
@@ -32,15 +33,6 @@ const ASSET_CLASS_HEADER: Record<AssetClass, string> = {
   bonds: "bg-violet-500/[0.06] border-violet-500/15",
   crypto: "bg-orange-500/[0.06] border-orange-500/15",
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 export default function SelectPage() {
   const router = useRouter();

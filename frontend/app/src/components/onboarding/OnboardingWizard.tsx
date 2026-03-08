@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { postOnboardingSubmit } from "../../lib/api";
+import { getStorage, setStorage } from "../../lib/storage";
 import { IncomeStep } from "./IncomeStep";
 import { SavingsStep } from "./SavingsStep";
 import { CreditScoreStep } from "./CreditScoreStep";
@@ -34,11 +35,9 @@ export function OnboardingWizard() {
   });
 
   useEffect(() => {
-    try {
-      if (localStorage.getItem("onboarding")) {
-        router.replace("/health");
-      }
-    } catch { /* ignore */ }
+    if (getStorage("onboarding")) {
+      router.replace("/health");
+    }
   }, [router]);
 
   const goNext = () => setStep((s) => (s < TOTAL_STEPS - 1 ? s + 1 : s));
@@ -61,22 +60,14 @@ export function OnboardingWizard() {
     const filteredHoldings = holdings.filter((h) => h.valueUSD > 0);
     try {
       const result = await postOnboardingSubmit({ ...formData, holdings: filteredHoldings });
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem("onboarding", JSON.stringify(formData));
-          localStorage.setItem("onboardingResult", JSON.stringify(result));
-        } catch { /* ignore */ }
-      }
+      setStorage("onboarding", formData);
+      setStorage("onboardingResult", result);
     } catch {
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem("onboarding", JSON.stringify(formData));
-        } catch { /* ignore */ }
-      }
+      setStorage("onboarding", formData);
     }
     const pairs = filteredHoldings.map((h) => `${encodeURIComponent(h.assetId)}:${h.valueUSD}`);
     const hParam = pairs.join(",");
-    if (typeof window !== "undefined" && hParam) {
+    if (hParam) {
       try { localStorage.setItem("lastHoldings", hParam); } catch { /* ignore */ }
     }
     router.push(`/pdashboard?h=${hParam}`);

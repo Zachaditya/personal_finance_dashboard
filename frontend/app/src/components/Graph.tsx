@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { PortfolioPriceHistory } from "../lib/types";
+import { formatCurrency } from "../lib/formatters";
 
 const LINES = [
   { key: "portfolio" as const, label: "Portfolio", color: "#00b070" },
@@ -23,15 +24,6 @@ const TOOLTIP_BORDER = "#e5e7eb";
 const INK_1 = "#1a1a1a";
 const INK_2 = "#4b5563";
 const INK_3 = "#6b7280";
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function formatDateShort(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");

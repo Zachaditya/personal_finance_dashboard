@@ -1,15 +1,10 @@
-import os
 from typing import List, Dict
 
-from dotenv import load_dotenv
-from openai import OpenAI
-
+from services.agent.client import client, MODEL_ID
 from app.schemas import AdvisorChatRequest, FinancialContext
+from app.config import settings
 
-load_dotenv()
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-MODEL_ID = "gpt-4o-mini"
+DEMO_DISABLED = "__DEMO_DISABLED__"
 
 
 def _build_system_prompt(context: FinancialContext) -> str:
@@ -59,6 +54,9 @@ def _build_system_prompt(context: FinancialContext) -> str:
 
 def advisor_chat(request: AdvisorChatRequest) -> str:
     """Multi-turn financial advisor chat. Returns assistant reply as plain text."""
+    if settings.demo_mode:
+        return DEMO_DISABLED
+
     system_prompt = _build_system_prompt(request.context)
 
     messages: List[Dict[str, str]] = [{"role": "system", "content": system_prompt}]

@@ -8,6 +8,7 @@ import type {
   PortfolioPriceHistory,
 } from "../lib/types";
 import { computeRatioSections } from "../lib/ratios";
+import { formatCurrency } from "../lib/formatters";
 import { Graph } from "./Graph";
 import { IndividualAssets } from "./IndividualAssets";
 import { AllocationPieCard, AllocationBreakdownCard } from "./AllocationChart";
@@ -39,15 +40,6 @@ const ASSET_CLASS_VALUE: Record<AssetClass, string> = {
   bonds: "text-violet-400",
   crypto: "text-orange-400",
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function getRatioValueClass(sentiment?: string): string {
   if (sentiment === "positive") return "text-emerald-400";

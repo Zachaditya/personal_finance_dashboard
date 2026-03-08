@@ -23,7 +23,7 @@ export type Portfolio = {
   allocationApprox: { cash: number; stocks: number; bonds: number; crypto: number };
 };
 
-export type financialProfile = {
+export type FinancialProfile = {
   name: string;
   age: number;
   income: number;
@@ -78,6 +78,15 @@ export type OnboardingSubmitResponse = {
   insights: string[];
   actionItems: string[];
   portfolioInsights: string[];
+};
+
+// Alias used when reading onboarding form data from localStorage
+export type OnboardingData = {
+  income: number;
+  savings: number;
+  creditScore: number;
+  totalDebt: number;
+  debtBreakdown?: { category: string; balanceUSD: number }[];
 };
 
 // Advisor feature types

@@ -1,30 +1,14 @@
 import json
 from pathlib import Path
+from typing import List, Dict
 
-from dotenv import load_dotenv
-import os
-from pydantic import BaseModel, Field
-from openai import OpenAI
-from typing import List, Optional, Dict, Any
-
-load_dotenv()
-
-# ---------------------------OPENAI KEY AND MODELS---------------------------------
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-# ---------------------------MODEL IDS---------------------------------
-MODEL_ID = "gpt-4o-mini"
-
-# ---------------------------USER DATA---------------------------------
-def _get_data_dir() -> Path:
-    """Return the path to the data directory (backend/data)."""
-    return Path(__file__).resolve().parent.parent.parent / "data"
+from services.agent.client import client, MODEL_ID
+from app.config import settings
 
 
 def get_user_onboarding_responses() -> dict | None:
     """Read and return onboarding quiz responses from user_onboarding.json, or None if missing."""
-    path = _get_data_dir() / "user_onboarding.json"
+    path = Path(__file__).resolve().parent.parent.parent / "data" / "user_onboarding.json"
     if not path.exists():
         return None
     with open(path, encoding="utf-8") as f:
@@ -122,6 +106,17 @@ def build_messages(user_data: dict) -> List[Dict[str, str]]:
 
 def analyze_health(user_data: dict) -> dict:
     """Call OpenAI and return portfolioScore, insights, and actionItems parsed from JSON response."""
+    if settings.demo_mode:
+        stored = get_user_onboarding_responses()
+        if stored and "result" in stored:
+            r = stored["result"]
+            return {
+                "portfolioScore": r.get("portfolioScore", 500),
+                "insights": r.get("insights", []),
+                "actionItems": r.get("actionItems", []),
+                "portfolioInsights": r.get("portfolioInsights", []),
+            }
+
     messages = build_messages(user_data)
     raw = generate_response(messages)
     try:
