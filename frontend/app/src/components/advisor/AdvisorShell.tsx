@@ -22,7 +22,10 @@ function ContextStatusBadge({ context }: { context: FinancialContext }) {
     <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-medium text-yellow-400 ring-1 ring-yellow-500/20">
       <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" />
       No profile yet —{" "}
-      <Link href="/" className="underline underline-offset-2 hover:text-yellow-300 transition-colors">
+      <Link
+        href="/"
+        className="underline underline-offset-2 hover:text-yellow-300 transition-colors"
+      >
         complete onboarding
       </Link>{" "}
       for personalized advice
@@ -32,7 +35,9 @@ function ContextStatusBadge({ context }: { context: FinancialContext }) {
 
 export function AdvisorShell() {
   const [activeTab, setActiveTab] = useState<Tab>("chat");
-  const [financialContext, setFinancialContext] = useState<FinancialContext>({});
+  const [financialContext, setFinancialContext] = useState<FinancialContext>(
+    {},
+  );
 
   useEffect(() => {
     const parsed = getStorage<OnboardingData>("onboarding");
@@ -59,7 +64,7 @@ export function AdvisorShell() {
           {(
             [
               { key: "chat", label: "AI Chat" },
-              { key: "cards", label: "Card Recommendations" },
+              { key: "cards", label: "Credit Card Recommendations" },
             ] as { key: Tab; label: string }[]
           ).map(({ key, label }) => (
             <button
@@ -78,7 +83,9 @@ export function AdvisorShell() {
         </div>
 
         {activeTab === "chat" && <AdvisorChat context={financialContext} />}
-        {activeTab === "cards" && <CardRecommendations context={financialContext} />}
+        {activeTab === "cards" && (
+          <CardRecommendations context={financialContext} />
+        )}
       </main>
     </div>
   );
