@@ -1,5 +1,5 @@
-import { OnboardingWizard } from "./src/components/onboarding/OnboardingWizard";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <OnboardingWizard />;
+  redirect("/health");
 }
