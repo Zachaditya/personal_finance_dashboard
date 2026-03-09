@@ -48,22 +48,17 @@ export function SideBar() {
             href === "/pdashboard" && effectiveH
               ? `/pdashboard?h=${effectiveH}`
               : href;
-          const isDashboardDisabled =
-            href === "/pdashboard" && !effectiveH && pathname !== "/pdashboard";
 
           return (
             <Link
               key={href}
-              href={isDashboardDisabled ? "#" : dashboardHref}
+              href={dashboardHref}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                isDashboardDisabled
-                  ? "cursor-not-allowed text-ink-4"
-                  : isActive
-                    ? "bg-gold-400/10 text-gold-400 ring-1 ring-gold-400/20"
-                    : "text-ink-3 hover:bg-navy-800 hover:text-ink-2"
+                isActive
+                  ? "bg-gold-400/10 text-gold-400 ring-1 ring-gold-400/20"
+                  : "text-ink-3 hover:bg-navy-800 hover:text-ink-2"
               }`}
               aria-current={isActive ? "page" : undefined}
-              onClick={(e) => isDashboardDisabled && e.preventDefault()}
             >
               <span className="text-base opacity-75">{icon}</span>
               {label}

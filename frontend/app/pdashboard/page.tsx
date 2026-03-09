@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import {
   postCustomPortfolio,
   postCustomPriceHistory,
+  getUserOnboarding,
 } from "../src/lib/api";
 import { Dashboard } from "../src/components/Dashboard";
 import { parseHoldings } from "../src/lib/parse-holdings";
@@ -12,7 +13,19 @@ type Props = {
 
 export default async function DashboardPage({ searchParams }: Props) {
   const params = await searchParams;
-  const h = typeof params.h === "string" ? params.h : undefined;
+  let h = typeof params.h === "string" ? params.h : undefined;
+
+  if (!h) {
+    try {
+      const onboarding = await getUserOnboarding();
+      const holdings = onboarding?.onboarding?.holdings ?? [];
+      if (holdings.length > 0) {
+        h = holdings.map((x) => `${x.assetId}:${x.valueUSD}`).join(",");
+      }
+    } catch {
+      // fall through to redirect
+    }
+  }
 
   if (!h) {
     redirect("/select");
