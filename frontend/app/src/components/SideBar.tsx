@@ -43,9 +43,7 @@ export function SideBar() {
       {/* Nav */}
       <nav className="flex flex-1 flex-col gap-0.5 p-3">
         {navItems.map(({ href, label, pathMatch, icon }) => {
-          const isActive = pathMatch.some((p) =>
-            p === "/" ? pathname === "/" : pathname.startsWith(p),
-          );
+          const isActive = pathMatch.some((p) => pathname.startsWith(p));
           const dashboardHref =
             href === "/pdashboard" && effectiveH
               ? `/pdashboard?h=${effectiveH}`
